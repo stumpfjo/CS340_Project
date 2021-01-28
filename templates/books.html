@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Books</h1>
+    <p>
+        Struggling to find the best way to represent the data for the books. One idea I had was to have just a books
+        tab that encompassed subjects, titles, and items. <br>
+        
+    </p>
+    <ul>
+        <li>quick links - users would be able to drill down into book categories listed. for example, <br>
+            clicking a subject would give you a list of titles of that subject. </li>
+            <ul>
+                <li>INSERT functionality for all book related entities</li>
+                <li>check in/checkout functionality. can be quick and easy using borrower_id and item_id</li>
+                <li>link to a list of subjects (subjects.html)</li>
+                <li>link to a list of all titles (titles.html)</li>
+                <li>link to a list of all items (items.html)</li>
+                    <ul>
+                        <li>check in/checkout functionality could be performed here.</li>
+                    </ul>
+            </ul>
+        <li>Search functionality</li>
+            <ul>
+                <li>advanced search style</li>
+                <li>radio buttons for different entity attributes to narrow search results</li>
+            </ul>
+        <li>DELETE functionality</li>
+        <li>might be an issue keeping this modular since we're splitting up the tables each of us are responsible for. curious to hear your thoughts.</li>
+    </ul>
+{% endblock %}
