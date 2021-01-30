@@ -1,0 +1,30 @@
+/*based on form tables from https://stackoverflow.com/questions/5967564/form-inside-a-table */
+#borrowerDisplay {
+  padding:0px;
+  line-height: 1.0;
+}
+div.table {
+  display:table;
+}
+form.tr, div.tr {
+  display:table-row;
+}
+span.td {
+  display:table-cell;
+}
+div.thead {
+  display:table-header-group;
+}
+span.th {
+  display: table-cell;
+  vertical-align: inherit;
+  font-weight: bold;
+  text-align: center;
+}
+div.tbody {
+  display:table-row-group;
+}
+div.caption {
+  display:table-caption;
+  text-align:center;
+}
