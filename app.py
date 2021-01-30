@@ -8,9 +8,13 @@ app = Flask(__name__)
 
 # Routes
 
-@app.route('/')
-def index(): 
+@app.route('/index.html')
+def static_index():
     return render_template("index.html")
+
+@app.route('/')
+def index():
+    return render_template("main.html")
 
 @app.route('/books')
 def books():
@@ -19,6 +23,14 @@ def books():
 @app.route('/borrowers')
 def borrowers():
     return render_template("borrowers.html")
+
+@app.route('/borrowers/add_borrowers')
+def add_borrowers():
+    return render_template("add_borrowers.html")
+
+@app.route('/borrowers/view_borrowers')
+def view_borrowers():
+    return render_template("view_borrowers.html")
 
 @app.route('/subjects')
 def subjects():
@@ -31,7 +43,7 @@ def titles():
 @app.route('/items')
 def items():
     return render_template("items.html")
-    
+
 @app.route('/checkout')
 def checkout():
     return render_template("checkout.html")

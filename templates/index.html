@@ -1,9 +1,14 @@
-{% extends 'base.html' %}
-
-{% block content %}
-	<h1>Home page</h1>
-	<ul>
-		<li>Maybe a picture?</li>
-		<li>Quick links?</li>
-	</ul>
-{% endblock %}
+<html>
+<head>
+  <title>Central Data Public Library</title>
+</head>
+<body>
+  <h1>List of Pages</h1>
+  <dl>
+    <dt><a href="/borrowers/add_borrowers">Add Borrowers</a></dt>
+    <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.
+    <dt><a href="/borrowers/add_borrowers">View/Modify Borrowers</a></dt>
+    <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
+  </dl>
+</body>
+</html>
