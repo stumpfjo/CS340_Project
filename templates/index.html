@@ -5,20 +5,30 @@
 <body>
   <h1>List of Pages</h1>
   <dl>
+    <dt><a href="/">Home</a></dt>
+    <dd>Homepage with links to all subpages</dd>
     <dt><a href="/borrowers">Borrowers Home</a></dt>
     <dd>Subpage to provide links to different Borrowers-related functions.</dd>
-    <dt><a href="/borrowers/add_borrowers">Add Borrowers</a></dt>
-    <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.
-    <dt><a href="/borrowers/add_borrowers">View/Modify Borrowers</a></dt>
-    <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
-    <dt><a href="{{url_for('view_borrower_checkouts')}}">View Borrower Checkouts</a></dt>
-    <dd>Displays the items checked out by a Borrower. Can be filtered to show only overdue items</dd>
+    <dd>
+      <dl>
+        <dt><a href="/borrowers/add_borrowers">Add Borrowers</a></dt>
+        <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.
+        <dt><a href="/borrowers/add_borrowers">View/Modify Borrowers</a></dt>
+        <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
+        <dt><a href="{{url_for('view_borrower_checkouts')}}">View Borrower Checkouts</a></dt>
+        <dd>Displays the items checked out by a Borrower. Can be filtered to show only overdue items</dd>
+      </dl>
+    </dd>
     <dt><a href="/items">Items Home</a></dt>
     <dd>Subpage to provide links to different Items-related functions.</dd>
-    <dt><a href="{{url_for('checkout_item')}}">Checkouts</a></dt>
-    <dd>Page for processing checkouts of Items to Borrowers and returns of Items to the library.
-    <dt><a href="{{url_for('manage_item')}}">Collection Management</a></dt>
-    <dd>Allows adding new Items to the library collection related to Titles in the system. Also allows removing Items from the library collection.</dd>
+    <dd>
+      <dl>
+        <dt><a href="{{url_for('checkout_item')}}">Checkouts</a></dt>
+        <dd>Page for processing checkouts of Items to Borrowers and returns of Items to the library.
+        <dt><a href="{{url_for('manage_item')}}">Collection Management</a></dt>
+        <dd>Allows adding new Items to the library collection related to Titles in the system. Also allows removing Items from the library collection.</dd>
+      </dl>
+    </dd>
   </dl>
 </body>
 </html>
