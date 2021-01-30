@@ -32,6 +32,10 @@ def add_borrowers():
 def view_borrowers():
     return render_template("borrowers/view_borrowers.html")
 
+@app.route('/borrowers/view_checkouts')
+def view_borrower_checkouts():
+    return render_template("borrowers/view_checkouts.html")
+
 @app.route('/subjects')
 def subjects():
     return render_template("subjects.html")
