@@ -28,6 +28,8 @@
 				    <ul class="dropdown-menu">
 				      <li><a class="dropdown-item" href="{{url_for('add_borrowers')}}">Add</a></li>
 				      <li><a class="dropdown-item" href="{{url_for('view_borrowers')}}">View/Modify</a></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item" href="{{url_for('borrowers')}}">Borrowers Home</a></li>
 				    </ul>
 				  </li>
 					<li class="nav-item">
@@ -36,12 +38,16 @@
 					<li class="nav-item">
 						<a class="nav-link" href="{{url_for('titles')}}">Titles</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{url_for('items')}}">Items</a>
-                    </li>
-                    <li class="nav-item">
-						<a class="nav-link" href="{{url_for('checkout')}}">Checkout</a>
-                    </li>
+					<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						Items</a>
+						<ul class="dropdown-menu">
+				      <li><a class="dropdown-item" href="{{url_for('checkout_item')}}">Check In/Out</a></li>
+				      <li><a class="dropdown-item" href="{{url_for('manage_item')}}">Collection Management</a></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item" href="{{url_for('items')}}">Items Home</a></li>
+				    </ul>
+          </li>
                     <!-- quick reference for dropdown nav item just in case. might want to use it for 'books' -->
 					<!-- <li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>

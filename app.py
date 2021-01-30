@@ -44,9 +44,13 @@ def titles():
 def items():
     return render_template("items.html")
 
-@app.route('/checkout')
-def checkout():
+@app.route('/items/checkout')
+def checkout_item():
     return render_template("checkout.html")
+
+@app.route('/items/manage')
+def manage_item():
+    return render_template("collection.html")
 
 # Listener
 

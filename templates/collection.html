@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Items</h1>
+  <h2>Checkouts</h2>
+  <div class="container">
+    <div class="row">
+      <form id="weed_item" class="col">
+        <fieldset>
+          <legend>Remove Item From Collection</legend>
+          <p>
+            <label for="weed_id">Item Number:</label>
+            <input type="number" id="weed_id" name="id_num">
+          <p>
+            <input type="submit" id="submit_weed" value="Weed Item">
+        </fieldset>
+      </form>
+      <form id="weed_item" class="col">
+        <fieldset>
+          <legend>Add Item To Collection</legend>
+          <p>
+            <label for="add_title_id">Title Number:</label>
+            <input type="number" id="add_title_id" name="id_num">
+          <p>
+            <label for="add_cutter_num">Cutter Number:</label>
+            <input type="text" id="add_cutter_num" name="cutter_num">
+          <p>
+            <input type="submit" id="submit_add_item" value="Add Item">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+{% endblock %}
