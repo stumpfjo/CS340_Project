@@ -26,11 +26,11 @@ def borrowers():
 
 @app.route('/borrowers/add_borrowers')
 def add_borrowers():
-    return render_template("add_borrowers.html")
+    return render_template("borrowers/add_borrowers.html")
 
 @app.route('/borrowers/view_borrowers')
 def view_borrowers():
-    return render_template("view_borrowers.html")
+    return render_template("borrowers/view_borrowers.html")
 
 @app.route('/subjects')
 def subjects():
@@ -46,11 +46,11 @@ def items():
 
 @app.route('/items/checkout')
 def checkout_item():
-    return render_template("checkout.html")
+    return render_template("items/checkout.html")
 
 @app.route('/items/manage')
 def manage_item():
-    return render_template("collection.html")
+    return render_template("items/collection.html")
 
 # Listener
 
