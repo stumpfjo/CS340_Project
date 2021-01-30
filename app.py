@@ -44,6 +44,14 @@ def subjects():
 def titles():
     return render_template("titles.html")
 
+@app.route('/titles/add_titles')
+def add_titles():
+    return render_template("titles/add_titles.html")
+
+@app.route('/titles/search_titles')
+def search_titles():
+    return render_template("titles/search_titles.html")
+
 @app.route('/items')
 def items():
     return render_template("items.html")

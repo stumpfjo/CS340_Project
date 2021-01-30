@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Titles</h1>
+    <h2>Add Titles to System</h2>
+    <form id="newBorrowerForm">
+      <fieldset>
+        <legend>New Title Information</legend>
+        <p>
+          <label for="new_title">Title:</label>
+          <input type="text" id="new_title" name="new_title">
+        <p>
+          <label for="new_pub_year">Publication Year:</label>
+          <input type="number" id="new_pub_year" name="publication_year">
+        <p>
+          <label for="new_edition">Edition:</label>
+          <input type="text" id="new_edition" name="edition">
+        <p>
+          <label for="new_language">Language:</label>
+          <input type="text" id="new_language" name="language">
+        <p>
+          <label for="new_call_num">Call Number:</label>
+          <input type="text" id="new_call_num" name="call_number">
+        <p>
+          <input type="submit" id="add_title" value="Add Title">
+      </fieldset>
+    </form>
+{% endblock %}

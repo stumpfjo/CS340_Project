@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Titles</h1>
+    <h2>Search By Title</h2>
+    <form id="search_titles">
+      <fieldset>
+        <legend>New Title Information</legend>
+        <p>
+          <label for="title_text">Title:</label>
+          <input type="text" id="title_text" name="title_text">
+          <input type="radio" id="t_exact" name="t_match_type" value="exact">
+          <label for="t_exact">Exact Match</label>
+          <input type="radio" id="t_artial" name="t_match_type" value="partial" checked="checked">
+          <label for="fPartial">Partial Match</label>
+        <p>
+          <input type="radio" id="t_all" name="t_collection_type" value="all">
+          <label for="t_all">All Titles</label>
+          <input type="radio" id="t_in_collection" name="t_collection_type" value="in_collection">
+          <label for="t_in_collection">In Collection</label>
+          <input type="radio" id="t_on_shelf" name="t_collection_type" value="on_shelf">
+          <label for="t_on_shelf">On Shelf</label>
+        <p>
+          <input type="submit" id="search_titles" value="Search">
+      </fieldset>
+    </form>
+    <h2>Results Display</h2>
+    <table>
+      <caption>Search Results</caption>
+      <thead>
+        <tr>
+          <th>Title Id</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>22</td>
+          <td>Three Body Problem</td>
+        </tr>
+      </tbody>
+    </table>
+{% endblock %}
