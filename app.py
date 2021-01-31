@@ -64,6 +64,14 @@ def checkout_item():
 def manage_item():
     return render_template("items/collection.html")
 
+@app.route('/creators')
+def creators():
+    return render_template("creators.html")    
+
+@app.route('/creators/add_creators')
+def add_creators():
+    return render_template("creators/add_creators.html") 
+
 # Listener
 
 if __name__ == "__main__":
