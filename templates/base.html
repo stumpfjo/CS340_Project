@@ -30,8 +30,15 @@
 							<li><a class="dropdown-item" href="{{url_for('borrowers')}}">Borrowers Home</a></li>
 				    </ul>
 				  </li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{url_for('subjects')}}">Subjects</a>
+					<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						Subjects</a>
+						<ul class="dropdown-menu">
+				      <li><a class="dropdown-item" href="{{url_for('add_subjects')}}">Add Subjects</a></li>
+				      <li><a class="dropdown-item" href="{{url_for('view_subjects')}}">Search Subjects</a></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item" href="{{url_for('subjects')}}">Subjects Home</a></li>
+				    </ul>
 					</li>
 					<li class="nav-item dropdown">
 				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -54,7 +61,7 @@
 				    </ul>
 		  </li>
 		  			<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Creators</a>
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Creators</a>
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 							<li><a class="dropdown-item" href="{{url_for('add_creators')}}">Add</a></li>
             				<li><a class="dropdown-item" href="{{url_for('view_creators')}}">View/Modify</a></li>
@@ -63,7 +70,7 @@
 						</ul>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Relationships</a>
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relationships</a>
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 							<li><a class="dropdown-item" href="{{url_for('add_title_subjects')}}">Add Title_Subjects</a></li>
 							<li><a class="dropdown-item" href="{{url_for('add_title_creators')}}">Add Title_Creators</a></li>
