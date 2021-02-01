@@ -40,6 +40,14 @@ def view_borrower_checkouts():
 def subjects():
     return render_template("subjects.html")
 
+@app.route('/subjects/add_subjects.html')
+def add_subjects():
+    return render_template("add_subjects.html")
+
+@app.route('/subjects/view_subjects')
+def view_subjects():
+    return render_template("view_subjects.html")
+
 @app.route('/titles')
 def titles():
     return render_template("titles.html")

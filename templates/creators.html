@@ -2,7 +2,12 @@
 
 {% block content %}
 <h1>Creators</h1>
-
+<dl>
+    <dt><a href="{{url_for('add_creators')}}">Add Creators</a></dt>
+    <dd>Page for manipulating the Creators table. Allows adding a new entry to Creators via a form.</dd>
+    <dt><a href="{{url_for('view_creators')}}">Search Creators</a></dt>
+    <dd>Allows user to search for Creators and see Titles associated with them.</dd>
+</dl>
 
 
 
