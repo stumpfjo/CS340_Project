@@ -2,12 +2,10 @@
 
 {% block content %}
     <h1>Subjects</h1>
-    <p>
-        could fall under books tab or we could implement all of the book related tables individually. 
-    </p>
-    <ul>
-        <li>INSERT functionality</li>
-        <li>DELETE functionality</li>
-        <li>links within each subject could lead users to titles related to that subject</li>
-    </ul>
+    <dl>
+      <dt><a href="{{url_for('add_subjects')}}">Add Subjects</a></dt>
+      <dd>Page for manipulating the Subjects table. Allows adding a new entry to Subjects via a form.</dd>
+      <dt><a href="{{url_for('view_subjects')}}">Sort by Subjects</a></dt>
+      <dd>Allows user to see titles associated with each subject.</dd>
+    </dl>
 {% endblock %}

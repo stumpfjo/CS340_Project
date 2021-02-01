@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Sort Titles by Subject</h2>
+<form id="sortBySubject">
+    <fieldset>
+        <legend>Select a Subject: </legend>
+        <p>
+            <select name="selectSubject" id="selectSubject">
+                <option value="horror">Horror</option>
+            </select>
+        <p>
+            <input type="submit" id="submitSubjectSelect" value="Select">
+    </fieldset>
+</form>
+<h2>Results Display</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Title ID</th>
+            <th>Title</th>
+            <th>Publication Year</th>
+            <th>Edition</th>
+            <th>Language</th>
+            <th>Call_Number</th>
+        </tr>
+        <tr>
+            <td>31</td>
+            <td>The Shining</td>
+            <td>1977</td>
+            <td>1</td>
+            <td>English</td>
+            <td>ABC123</td>
+        </tr>
+    </thead>
+</table>
+{% endblock %}

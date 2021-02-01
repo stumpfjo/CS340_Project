@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Add New Title/Creator Relationship</h2>
+<form id="newTitleCreator">
+  <fieldset>
+    <legend>New Title_Creators Relationship</legend>
+    <p>
+        <label for="newTitleCreatorTitle">Title ID: </label>
+        <input type="text" id="newTitleCreatorFirstName" name=title_creator_title>
+    <p>
+        <label for="newTitleCreatorCreator">Creator ID:</label>
+        <input type="text" id="newTitleCreatorLastName" name=title_creator_creator>
+    <p>
+        <input type="submit" id="addTitleCreator" value="Add Relationship">
+  </fieldset>
+</form>
+
+{% endblock %}

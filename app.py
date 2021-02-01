@@ -72,6 +72,31 @@ def creators():
 def add_creators():
     return render_template("creators/add_creators.html") 
 
+@app.route('/creators/view_creators')
+def view_creators():
+    return render_template("creators/view_creators.html")
+
+@app.route('/relationships')
+def relationships():
+    return render_template("relationships.html")
+
+@app.route('/relationships/add_title_creators')
+def add_title_creators():
+    return render_template("relationships/add_title_creators.html")
+
+@app.route('/relationships/add_title_subjects')
+def add_title_subjects():
+    return render_template("relationships/add_title_subjects.html")
+
+@app.route('/relationships/view_title_creators')
+def view_title_creators():
+    return render_template("relationships/view_title_creators.html")
+
+
+@app.route('/relationships/view_title_subjects')
+def view_title_subjects():
+    return render_template("relationships/view_title_subjects.html")
+
 # Listener
 
 if __name__ == "__main__":
