@@ -40,6 +40,14 @@ def view_borrower_checkouts():
 def subjects():
     return render_template("subjects.html")
 
+@app.route('/subjects/add_subjects.html')
+def add_subjects():
+    return render_template("subjects/add_subjects.html")
+
+@app.route('/subjects/view_subjects')
+def view_subjects():
+    return render_template("subjects/view_subjects.html")
+
 @app.route('/titles')
 def titles():
     return render_template("titles.html")
@@ -63,6 +71,39 @@ def checkout_item():
 @app.route('/items/manage')
 def manage_item():
     return render_template("items/collection.html")
+
+@app.route('/creators')
+def creators():
+    return render_template("creators.html")    
+
+@app.route('/creators/add_creators')
+def add_creators():
+    return render_template("creators/add_creators.html") 
+
+@app.route('/creators/view_creators')
+def view_creators():
+    return render_template("creators/view_creators.html")
+
+@app.route('/relationships')
+def relationships():
+    return render_template("relationships.html")
+
+@app.route('/relationships/add_title_creators')
+def add_title_creators():
+    return render_template("relationships/add_title_creators.html")
+
+@app.route('/relationships/add_title_subjects')
+def add_title_subjects():
+    return render_template("relationships/add_title_subjects.html")
+
+@app.route('/relationships/view_title_creators')
+def view_title_creators():
+    return render_template("relationships/view_title_creators.html")
+
+
+@app.route('/relationships/view_title_subjects')
+def view_title_subjects():
+    return render_template("relationships/view_title_subjects.html")
 
 # Listener
 

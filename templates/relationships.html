@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Relationships</h1>
+    <dl>
+      <dt><a href="{{url_for('add_title_subjects')}}">Add Title_Subjects Relationship</a></dt>
+      <dd>Page for adding new relationships between Titles and Subjects.</dd>
+      <dt><a href="{{url_for('add_title_creators')}}">Add Title_Creators Relationship</a></dt>
+      <dd>Page for adding new relationships between Titles and Creators.</dd>
+      <dt><a href="{{url_for('view_title_subjects')}}">Search Title_Subjects Relationships</a></dt>
+      <dd>Page for manipulating relationships between Titles and Subjects. Allows users to search/edit/delete existing relationships.</dd>
+      <dt><a href="{{url_for('view_title_creators')}}">Search Title_Creators Relationships</a></dt>
+      <dd>Page for manipulating relationships between Titles and Creators. Allows users to search/edit/delete existing relationships.</dd>
+    </dl>
+{% endblock %}

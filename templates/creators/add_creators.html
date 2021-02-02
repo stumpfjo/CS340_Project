@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Add New Creator</h2>
+<form id="newCreatorForm">
+  <fieldset>
+    <legend>New Creator Information</legend>
+    <p>
+      <label for="newFirstName">First Name:</label>
+      <input type="text" id="newFirstName" name=fname>
+    <p>
+      <label for="newLastName">Last Name:</label>
+      <input type="text" id="newLastName" name=lname>
+    <p>
+      <input type="submit" id="addCreator" value="Add Creator">
+  </fieldset>
+</form>
+
+
+
+
+{% endblock %}

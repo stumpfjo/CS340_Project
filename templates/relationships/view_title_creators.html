@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Search Existing Title_Creators Relationships</h2>
+<form id="searchTitleCreators">
+  <fieldset>
+    <legend>Search By ID</legend>
+    <p>
+        <label for="searchTitleCreatorTitleID">Title ID: </label>
+        <input type="text" id="searchTitleCreatorTitleID" name=title_creator_titleID>
+    <p>
+        <label for="searchTitleCreatorCreatorID">Creator ID:</label>
+        <input type="text" id="searchTitleCreatorCreatorID" name=title_creator_creatorID>
+    <p>
+        <input type="submit" id="searchTitleCreatorsButton" value="Search">
+  </fieldset>
+</form>
+<h2>Search Results</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Title ID</th>
+            <th>Creator ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>123</td>
+            <td>789</td>
+            <td>
+                <button class="updateRelationship">Update</button>
+            </td>
+            <td>
+                <button class="deleteRelationship">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -16,6 +16,14 @@
         <dd>Displays the items checked out by a Borrower. Can be filtered to show only overdue items</dd>
       </dl>
     </dd>
+    <dl>
+      <dt><a href="{{url_for('subjects')}}">Subjects Home</a></dt>
+      <dd>Subpage to provide links to different Subjects-related functions.</dd>
+      <dt><a href="{{url_for('add_subjects')}}">Add Subjects</a></dt>
+      <dd>Page for manipulating the Subjects table. Allows adding a new entry to Subjects via a form.</dd>
+      <dt><a href="{{url_for('view_subjects')}}">Sort by Subjects</a></dt>
+      <dd>Allows user to see titles associated with each subject.</dd>
+    </dl>
 		<dt><a href="titles">Titles Home</a></dt>
     <dd>Subpage to provide links to different Titles-related functions.</dd>
     <dd>
@@ -36,5 +44,25 @@
         <dd>Allows adding new Items to the library collection related to Titles in the system. Also allows removing Items from the library collection.</dd>
       </dl>
     </dd>
+    <dl>
+      <dt><a href="{{url_for('creators')}}">Creators Home</a></dt>
+      <dd>Subpage to provide links to different Creators related functions.</dd>
+      <dt><a href="{{url_for('add_creators')}}">Add Creators</a></dt>
+      <dd>Page for manipulating the Creators table. Allows adding a new entry to Creators via a form.</dd>
+      <dt><a href="{{url_for('view_creators')}}">Search Creators</a></dt>
+      <dd>Allows user to search for Creators and see Titles associated with them.</dd>
+    </dl>
+    <dl>
+      <dt><a href="{{url_for('relationships')}}">Relationships Home</a></dt>
+      <dd>Subpage to provide links to different relationships related functions.</dd>
+      <dt><a href="{{url_for('add_title_subjects')}}">Add Title_Subjects Relationship</a></dt>
+      <dd>Page for adding new relationships between Titles and Subjects.</dd>
+      <dt><a href="{{url_for('add_title_creators')}}">Add Title_Creators Relationship</a></dt>
+      <dd>Page for adding new relationships between Titles and Creators.</dd>
+      <dt><a href="{{url_for('view_title_subjects')}}">Search Title_Subjects Relationships</a></dt>
+      <dd>Page for manipulating relationships between Titles and Subjects. Allows users to search/edit/delete existing relationships.</dd>
+      <dt><a href="{{url_for('view_title_creators')}}">Search Title_Creators Relationships</a></dt>
+      <dd>Page for manipulating relationships between Titles and Creators. Allows users to search/edit/delete existing relationships.</dd>
+    </dl>
   </dl>
 {% endblock %}
