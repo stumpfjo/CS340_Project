@@ -72,6 +72,10 @@ def add_titles():
 def search_titles():
     return render_template("titles/search_titles.html")
 
+@app.route('/titles/update_title')
+def update_title():
+    return render_template("titles/update_title.html")
+
 @app.route('/items')
 def items():
     return render_template("items.html")

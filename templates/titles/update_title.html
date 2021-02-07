@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Title Details</h2>
+<form id="updateTitleForm" method="post">
+  <fieldset>
+    <legend>Title Information</legend>
+    <p>
+      <label for="new_title">Title:</label>
+      <input type="text" id="new_title" name="new_title" value="autofill">
+    <p>
+      <label for="new_pub_year">Publication Year:</label>
+      <input type="number" id="new_pub_year" name="publication_year" value="autofill">
+    <p>
+      <label for="new_edition">Edition:</label>
+      <input type="text" id="new_edition" name="edition" value="autofill">
+    <p>
+      <label for="new_language">Language:</label>
+      <input type="text" id="new_language" name="language" value="autofill">
+    <p>
+      <label for="new_call_num">Call Number:</label>
+      <input type="text" id="new_call_num" name="call_number" value="autofill">
+    <p>
+      <input type="submit" id="add_title" value="Add Title" value="autofill">
+  </fieldset>
+</form>
+{% endblock %}

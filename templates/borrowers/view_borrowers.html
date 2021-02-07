@@ -68,7 +68,13 @@
       <td>
         <form method="get" action="{{url_for('view_checkouts')}}">
           <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="checkouts" value="View Checkouts">
+          <input type="submit" name="view_checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
         </form>
       </td>
       <td>
@@ -99,6 +105,12 @@
         </form>
       </td>
       <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
         <form method="get" action="{{url_for('delete_borrower')}}">
           <input type="hidden" value="1" id="1" name="id">
           <input type="submit" name="delete" value="Delete">
@@ -126,6 +138,12 @@
         </form>
       </td>
       <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
         <form method="get" action="{{url_for('delete_borrower')}}">
           <input type="hidden" value="1" id="1" name="id">
           <input type="submit" name="delete" value="Delete">
@@ -150,6 +168,12 @@
         <form method="get" action="{{url_for('view_checkouts')}}">
           <input type="hidden" value="1" id="1" name="id">
           <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
         </form>
       </td>
       <td>

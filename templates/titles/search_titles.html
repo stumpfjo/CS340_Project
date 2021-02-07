@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Titles</h1>
-    <h2>Search By Title</h2>
+<h1>Titles</h1>
+    <!--<h2>Search By Title</h2>
     <form id="search_titles">
       <fieldset>
         <legend>New Title Information</legend>
@@ -23,21 +23,91 @@
         <p>
           <input type="submit" id="search_titles" value="Search">
       </fieldset>
-    </form>
-    <h2>Results Display</h2>
-    <table>
-      <caption>Search Results</caption>
-      <thead>
-        <tr>
-          <th>Title Id</th>
-          <th>Title</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>22</td>
-          <td>Three Body Problem</td>
-        </tr>
-      </tbody>
-    </table>
+    </form>-->
+<p>Filter Item List based on any field:</p>
+  <input class="form-control" id="myInput" type="text" placeholder="Search...">
+<br>
+<h2>Results Display</h2>
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
+  <caption>Search Results</caption>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Language</th>
+      <th>Publication Year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Three Body Problem</td>
+      <td>Mandarin</td>
+      <td>2017</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Three Body Problem</td>
+      <td>English</td>
+      <td>2018</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Lilith's Brood</td>
+      <td>English</td>
+      <td>1995</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="2" id="2" name="id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Binti</td>
+      <td>English</td>
+      <td>2018</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="3" id="3" name="id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>The Amber Spyglass</td>
+      <td>English</td>
+      <td>2020</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="4" id="4" name="id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
 {% endblock %}

@@ -6,7 +6,7 @@
 <p>Filter Item List based on any field:</p>
   <input class="form-control" id="myInput" type="text" placeholder="Search...">
 <br>
-<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top">
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
   <caption>Search Results</caption>
   <thead>
     <tr>
@@ -39,7 +39,7 @@
     </tr>
     <tr>
       <td>3</td>
-      <td>Bindi/td>
+      <td>Bindi</td>
       <td>
         <form method="get" action="{{url_for('add_checkouts')}}">
           <input type="hidden" value="1" id="1" name="item_id">
