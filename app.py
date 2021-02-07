@@ -28,12 +28,20 @@ def borrowers():
 def add_borrowers():
     return render_template("borrowers/add_borrowers.html")
 
+@app.route('/borrowers/delete_borrower')
+def delete_borrower():
+    return render_template("borrowers/delete_borrower.html")
+
+@app.route('/borrowers/update_borrowers')
+def update_borrowers():
+    return render_template("borrowers/update_borrowers.html")
+
 @app.route('/borrowers/view_borrowers')
 def view_borrowers():
     return render_template("borrowers/view_borrowers.html")
 
 @app.route('/borrowers/view_checkouts')
-def view_borrower_checkouts():
+def view_checkouts():
     return render_template("borrowers/view_checkouts.html")
 
 @app.route('/subjects')
@@ -74,11 +82,11 @@ def manage_item():
 
 @app.route('/creators')
 def creators():
-    return render_template("creators.html")    
+    return render_template("creators.html")
 
 @app.route('/creators/add_creators')
 def add_creators():
-    return render_template("creators/add_creators.html") 
+    return render_template("creators/add_creators.html")
 
 @app.route('/creators/view_creators')
 def view_creators():
