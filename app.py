@@ -44,6 +44,10 @@ def view_borrowers():
 def view_checkouts():
     return render_template("borrowers/view_checkouts.html")
 
+@app.route('/items/add_checkouts')
+def add_checkouts():
+    return render_template("items/add_checkouts.html")
+
 @app.route('/subjects')
 def subjects():
     return render_template("subjects.html")
@@ -75,6 +79,10 @@ def items():
 @app.route('/items/checkout')
 def checkout_item():
     return render_template("items/checkout.html")
+
+@app.route('/items/return_item.html')
+def return_item():
+    return render_template("items/return_item.html")
 
 @app.route('/items/manage')
 def manage_item():

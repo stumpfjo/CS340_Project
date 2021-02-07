@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Check Out items for borrower *Name*<h2>
+
+<p>Filter Item List based on any field:</p>
+  <input class="form-control" id="myInput" type="text" placeholder="Search...">
+<br>
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top">
+  <caption>Search Results</caption>
+  <thead>
+    <tr>
+      <th>Item Id</th>
+      <th>Title</th>
+    </tr>
+  </thead>
+  <tbody id="myTable">
+    <tr>
+      <td>John</td>
+      <td>Doe</td>
+      <td>john@example.com</td>
+      <td>123 Anystreet</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="view_checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkout">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Mary</td>
+      <td>Moe</td>
+      <td>mary@mail.com</td>
+      <td>567 Anystreet</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>July</td>
+      <td>Dooley</td>
+      <td>july@greatstuff.com</td>
+      <td>123 Avenue A</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Anja</td>
+      <td>Ravendale</td>
+      <td>a_r@test.com</td>
+      <td>123 South Dr.</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+
+{% endblock %}
