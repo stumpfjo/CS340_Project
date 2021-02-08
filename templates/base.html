@@ -7,6 +7,7 @@
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 	<link href="/static/tables.css" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -24,12 +25,17 @@
 				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Borrowers</a>
 				    <ul class="dropdown-menu">
 				      <li><a class="dropdown-item" href="{{url_for('add_borrowers')}}">Add</a></li>
-				      <li><a class="dropdown-item" href="{{url_for('view_borrowers')}}">View/Modify</a></li>
-							<li><a class="dropdown-item" href="{{url_for('view_borrower_checkouts')}}">View Checkouts</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="{{url_for('borrowers')}}">Borrowers Home</a></li>
+				      <li><a class="dropdown-item" href="{{url_for('view_borrowers')}}">View, Edit, and Check In/Out</a></li>
 				    </ul>
 				  </li>
+					<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						Titles</a>
+						<ul class="dropdown-menu">
+				      <li><a class="dropdown-item" href="{{url_for('add_titles')}}">Add Titles</a></li>
+				      <li><a class="dropdown-item" href="{{url_for('search_titles')}}">Search Titles</a></li>
+				    </ul>
+					</li>
 					<li class="nav-item dropdown">
 				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 						Subjects</a>
@@ -40,26 +46,6 @@
 							<li><a class="dropdown-item" href="{{url_for('subjects')}}">Subjects Home</a></li>
 				    </ul>
 					</li>
-					<li class="nav-item dropdown">
-				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-						Titles</a>
-						<ul class="dropdown-menu">
-				      <li><a class="dropdown-item" href="{{url_for('add_titles')}}">Add Titles</a></li>
-				      <li><a class="dropdown-item" href="{{url_for('search_titles')}}">Search Titles</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="{{url_for('titles')}}">Titles Home</a></li>
-				    </ul>
-					</li>
-					<li class="nav-item dropdown">
-				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-						Items</a>
-						<ul class="dropdown-menu">
-				      <li><a class="dropdown-item" href="{{url_for('checkout_item')}}">Check In/Out</a></li>
-				      <li><a class="dropdown-item" href="{{url_for('manage_item')}}">Collection Management</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="{{url_for('items')}}">Items Home</a></li>
-				    </ul>
-		  </li>
 		  			<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Creators</a>
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -69,17 +55,7 @@
             				<li><a class="dropdown-item" href="{{url_for('creators')}}">Creators Home</a></li>
 						</ul>
 					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relationships</a>
-						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-							<li><a class="dropdown-item" href="{{url_for('add_title_subjects')}}">Add Title_Subjects</a></li>
-							<li><a class="dropdown-item" href="{{url_for('add_title_creators')}}">Add Title_Creators</a></li>
-							<li><a class="dropdown-item" href="{{url_for('view_title_subjects')}}">View Title_Subjects</a></li>
-            				<li><a class="dropdown-item" href="{{url_for('view_title_creators')}}">View Title_Creators</a></li>
-            				<li><hr class="dropdown-divider"></li>
-            				<li><a class="dropdown-item" href="{{url_for('relationships')}}">Relationships Home</a></li>
-						</ul>
-					</li>
+					
 				</ul>
 			</div>
 		</div>
@@ -89,7 +65,7 @@
 
     {% endblock %}
 
-		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 </body>
 </html>

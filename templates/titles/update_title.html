@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Title Details</h2>
+<form id="updateTitleForm" method="post" action="{{url_for('update_title')}}">
+  <fieldset>
+    <legend>Title Information</legend>
+    <p>
+      <label for="new_title">Title:</label>
+      <input type="text" id="new_title" name="new_title" value="autofill">
+    <p>
+      <label for="new_pub_year">Publication Year:</label>
+      <input type="number" id="new_pub_year" name="publication_year" value="1999">
+    <p>
+      <label for="new_edition">Edition:</label>
+      <input type="text" id="new_edition" name="edition" value="autofill">
+    <p>
+      <label for="new_language">Language:</label>
+      <input type="text" id="new_language" name="language" value="autofill">
+    <p>
+      <label for="new_call_num">Call Number:</label>
+      <input type="text" id="new_call_num" name="call_number" value="autofill">
+    <p>
+      <input type="submit" id="update_title" value="Update Title" value="autofill">
+  </fieldset>
+</form>
+
+<div class="container">
+  <div class="row">
+    <table class="col">
+      <caption>Creators</caption>
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FN1</td>
+          <td>LN1</td>
+          <td>
+            <form method="post" action="{{url_for('update_title')}}">
+              <input type="hidden" name="creator_id" value="1">
+              <input type="hidden" name="title_id" value="1">
+              <input type="submit" name="delete_creator" value="Remove Creator">
+        </tr>
+        <tr>
+          <td>FN2</td>
+          <td>LN2</td>
+          <td>
+            <form method="post" action="{{url_for('update_title')}}">
+              <input type="hidden" name="creator_id" value="2">
+              <input type="hidden" name="title_id" value="1">
+              <input type="submit" name="delete_creator" value="Remove Creator">
+        </tr>
+    </table>
+    <table class="col">
+      <caption>Subjects</caption>
+      <thead>
+        <tr>
+          <th>Subject</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Science Fiction</td>
+          <td>
+            <form method="post" action="{{url_for('update_title')}}">
+              <input type="hidden" name="subject_id" value="1">
+              <input type="hidden" name="title_id" value="1">
+              <input type="submit" name="remove_subject" value="Remove Subject">
+        </tr>
+        <tr>
+          <td>Fantasy</td>
+          <td>
+            <form method="post" action="{{url_for('update_title')}}">
+              <input type="hidden" name="subject_id" value="2">
+              <input type="hidden" name="title_id" value="1">
+              <input type="submit" name="remove_subject" value="Remove Subject">
+        </tr>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col">
+      <p>Filter Creator List:</p>
+        <input class="form-control" id="creatorInput" type="text" placeholder="Search...">
+      <br>
+      <table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="creatorTable">
+        <caption>Creators</caption>
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FN1</td>
+            <td>LN1</td>
+            <td>
+              <form method="post" action="{{url_for('update_title')}}">
+                <input type="hidden" name="creator_id" value="1">
+                <input type="hidden" name="title_id" value="1">
+                <input type="submit" name="delete_creator" value="Remove Creator">
+          </tr>
+          <tr>
+            <td>FN2</td>
+            <td>LN2</td>
+            <td>
+              <form method="post" action="{{url_for('update_title')}}">
+                <input type="hidden" name="creator_id" value="2">
+                <input type="hidden" name="title_id" value="1">
+                <input type="submit" name="delete_creator" value="Remove Creator">
+          </tr>
+      </table>
+    </div>
+    <div class="col">
+      <p>Filter Subject List:</p>
+        <input class="form-control" id="subjectInput" type="text" placeholder="Search...">
+      <br>
+      <table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="subjectTable">
+        <caption>Subjects</caption>
+        <thead>
+          <tr>
+            <th>Subject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Science Fiction</td>
+            <td>
+              <form method="post" action="{{url_for('update_title')}}">
+                <input type="hidden" name="subject_id" value="1">
+                <input type="hidden" name="title_id" value="1">
+                <input type="submit" name="add_subject" value="Add Subject">
+          </tr>
+          <tr>
+            <td>Fantasy</td>
+            <td>
+              <form method="post" action="{{url_for('update_title')}}">
+                <input type="hidden" name="subject_id" value="2">
+                <input type="hidden" name="title_id" value="1">
+                <input type="submit" name="add_subject" value="Add Subject">
+          </tr>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#creatorInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#creatorTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+$(document).ready(function(){
+  $("#subjectInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#subjectTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}

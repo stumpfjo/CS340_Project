@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>View/Update/Delete Exiting Borrowers</h2>
+<h2>View Borrowers<h2>
+
 <h3>Search Parameters</h3>
 <form id="newBorrowerForm">
   <fieldset>
@@ -34,89 +35,172 @@
       <input type="submit" id="findBorrower" value="Find Borrower(s)">
   </fieldset>
 </form>
-<h3>Results Display</h3>
-<div class="table" style="font-size:x-small;padding:0px;width:auto" id="override">
-  <div class="caption">Search Results</div>
-  <div class="thead">
-    <div class="tr">
-      <span class="th" style="padding:0px">Borrower No.</span>
-      <span class="th" style="padding:0px">First name</span>
-      <span class="th" style="padding:0px">Last Name</span>
-      <span class="th" style="padding:0px">Email</span>
-      <span class="th" style="padding:0px">Street Adddress</span>
-      <span class="th" style="padding:0px">City</span>
-      <span class="th" style="padding:0px">State</span>
-      <span class="th" style="padding:0px">Zip Code</span>
-      <span class="th" colspan="2" style="padding:0px">Action</span>
-    </div>
-  </div>
-  <div class="tbody" id="borrowerDisplay">
-    <form class="tr" id="1">
-      <span class="td" style="padding:0px">1<input style="padding:0px" type="hidden" value="1" id="1" name=id></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="text" name="fname" value="Jane"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="text" name="lname" value="Doe"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="email" name="email" value="jdoe@email.org"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="text" name="street" value="123 Anystreet"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="text" name="city" value="Sometown"></span>
-      <span class="td" style="padding:0px">
-        <select style="padding:0px" id="newState" name="stateAbbrev">
-          <option value="AL">Alabama</option>
-          <option value="AK">Alaska</option>
-          <option value="AZ">Arizona</option>
-          <option value="AR">Arkansas</option>
-          <option value="CA">California</option>
-          <option value="CO">Colorado</option>
-          <option value="CT">Connecticut</option>
-          <option value="DE">Delaware</option>
-          <option value="DC">District Of Columbia</option>
-          <option value="FL">Florida</option>
-          <option value="GA">Georgia</option>
-          <option value="HI">Hawaii</option>
-          <option value="ID">Idaho</option>
-          <option value="IL">Illinois</option>
-          <option value="IN">Indiana</option>
-          <option value="IA">Iowa</option>
-          <option value="KS">Kansas</option>
-          <option value="KY">Kentucky</option>
-          <option value="LA">Louisiana</option>
-          <option value="ME">Maine</option>
-          <option value="MD">Maryland</option>
-          <option value="MA">Massachusetts</option>
-          <option value="MI">Michigan</option>
-          <option value="MN">Minnesota</option>
-          <option value="MS">Mississippi</option>
-          <option value="MO">Missouri</option>
-          <option value="MT">Montana</option>
-          <option value="NE">Nebraska</option>
-          <option value="NV">Nevada</option>
-          <option value="NH">New Hampshire</option>
-          <option value="NJ">New Jersey</option>
-          <option value="NM">New Mexico</option>
-          <option value="NY">New York</option>
-          <option value="NC">North Carolina</option>
-          <option value="ND">North Dakota</option>
-          <option value="OH">Ohio</option>
-          <option value="OK">Oklahoma</option>
-          <option value="OR" selected="selected">Oregon</option>
-          <option value="PA">Pennsylvania</option>
-          <option value="RI">Rhode Island</option>
-          <option value="SC">South Carolina</option>
-          <option value="SD">South Dakota</option>
-          <option value="TN">Tennessee</option>
-          <option value="TX">Texas</option>
-          <option value="UT">Utah</option>
-          <option value="VT">Vermont</option>
-          <option value="VA">Virginia</option>
-          <option value="WA">Washington</option>
-          <option value="WV">West Virginia</option>
-          <option value="WI">Wisconsin</option>
-          <option value="WY">Wyoming</option>
-        </select>
-      </span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="text" name="zip" value="98765"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="submit" name="update" value="Update"></span>
-      <span class="td" style="padding:0px"><input style="padding:0px" type="submit" name="delete" value="Delete"></span>
-    </form>
-  </div>
-</div>
+<!--<p>Filter Borrower List based on any field:</p>
+  <input class="form-control" id="myInput" type="text" placeholder="Search...">
+  <br>-->
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small">
+  <thead>
+    <tr>
+      <th>Firstname</th>
+      <th>Lastname</th>
+      <th>Email</th>
+      <th>Street</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Zip Code</th>
+    </tr>
+  </thead>
+  <tbody id="myTable">
+    <tr>
+      <td>John</td>
+      <td>Doe</td>
+      <td>john@example.com</td>
+      <td>123 Anystreet</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="view_checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Mary</td>
+      <td>Moe</td>
+      <td>mary@mail.com</td>
+      <td>567 Anystreet</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>July</td>
+      <td>Dooley</td>
+      <td>july@greatstuff.com</td>
+      <td>123 Avenue A</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>Anja</td>
+      <td>Ravendale</td>
+      <td>a_r@test.com</td>
+      <td>123 South Dr.</td>
+      <td>Sometown</td>
+      <td>OR</td>
+      <td>98765</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="1" id="1" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+
 {% endblock %}
