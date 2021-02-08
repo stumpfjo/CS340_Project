@@ -1,3 +1,8 @@
+# Citation for the following function:
+# Date: 2020-02-07
+# Copied from /OR/ Adapted from /OR/ Based on:
+# Source URL: https://github.com/gkochera/CS340-demo-flask-app
+
 from flask import Flask, render_template, request, json
 # import database.db_connector as db
 import os
