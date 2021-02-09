@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Sort Titles by Subject</h2>
+<h2>Search Titles by Subject</h2>
 <form id="sortBySubject">
     <fieldset>
         <legend>Select a Subject: </legend>
@@ -13,25 +13,60 @@
             <input type="submit" id="submitSubjectSelect" value="Select">
     </fieldset>
 </form>
+<h2>Search Titles</h2>
+<input class="form-control" id="myInput" type="text" placeholder="Search...">
+<br>
 <h2>Results Display</h2>
-<table id="subjectsSearch">
-    <thead>
-        <tr>
-            <th>Title ID</th>
-            <th>Title</th>
-            <th>Publication Year</th>
-            <th>Edition</th>
-            <th>Language</th>
-            <th>Call_Number</th>
-        </tr>
-        <tr>
-            <td>31</td>
-            <td>The Shining</td>
-            <td>1977</td>
-            <td>1</td>
-            <td>English</td>
-            <td>ABC123</td>
-        </tr>
-    </thead>
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
+  <caption>Search Results</caption>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Language</th>
+      <th>Publication Year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Frankenstein</td>
+      <td>English</td>
+      <td>1818</td>
+    </tr>
+    <tr>
+      <td>Dracula</td>
+      <td>English</td>
+      <td>1897</td>
+    </tr>
+    <tr>
+      <td>The Exorcist</td>
+      <td>English</td>
+      <td>1971</td>
+    </tr>
+    <tr>
+      <td>The Shining</td>
+      <td>English</td>
+      <td>1977</td>
+    </tr>
+    <tr>
+      <td>The Silence of the Lambs</td>
+      <td>English</td>
+      <td>1988</td>
+    </tr>
+  </tbody>
 </table>
+
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
 {% endblock %}
