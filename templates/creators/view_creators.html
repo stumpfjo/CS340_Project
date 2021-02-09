@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>Search Creators</h2>
-<h3>Search Parameters</h3>
+<!-- <h3>Search Parameters</h3>
 <form id="searchCreators">
   <fieldset>
     <legend>Display Creators Matching:</legend>
@@ -36,5 +36,55 @@
         <td>Stephen</td>
         <td>King</td>
     </tbody>
+</table> -->
+
+<input class="form-control" id="myInput" type="text" placeholder="Search...">
+<br>
+<h2>Results Display</h2>
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
+  <caption>Search Results</caption>
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Charles</td>
+      <td>Dickens</td>
+    </tr>
+    <tr>
+      <td>Mark</td>
+      <td>Twain</td>
+    </tr>
+    <tr>
+      <td>Ernest</td>
+      <td>Hemingway</td>
+    </tr>
+    <tr>
+      <td>Jane</td>
+      <td>Austen</td>
+    </tr>
+    <tr>
+      <td>J.K.</td>
+      <td>Rowling</td>
+    </tr>
+  </tbody>
 </table>
+
+<!-- Citation for the following function:
+     Date: 2021-02-06
+     Copied from /OR/ Adapted from /OR/ Based on:
+     Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
 {% endblock %}

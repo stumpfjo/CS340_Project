@@ -5,14 +5,14 @@
 	<h2>List of Pages</h2>
   <dl>
     <dt>Borrowers</dt>
-    <dd>Subpage to provide links to different Borrowers-related functions.</dd>
+    <!-- <dd>Subpage to provide links to different Borrowers-related functions.</dd> -->
     <dd>
       <dl>
         <dt><a href="/borrowers/add_borrowers">Add Borrowers</a></dt>
         <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.</dd>
         <dt><a href="/borrowers/view_borrowers">View/Modify Borrowers</a></dt>
         <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
-				<dt><a href="/borrowers/delete_borrowers">Delete Borrower</a></dt>
+				<dt><a href="/borrowers/delete_borrower">Delete Borrower</a></dt>
         <dd>Page that confirms deletion of a specific borrower.</dd>
         <dt><a href="/borrowers/update_borrowers">Update Borrower</a></dt>
         <dd>Page that allows updating the info for a given Borrower</dd>
@@ -20,8 +20,8 @@
         <dd>Page that allows viewing the Items a Borrower has checked out. These items can be checked back in.</dd>
       </dl>
     </dd>
-		<dt>Items Home</dt>
-    <dd>Subpage to provide links to different Items-related functions.</dd>
+		<dt>Items</dt>
+    <!-- <dd>Subpage to provide links to different Items-related functions.</dd> -->
     <dd>
       <dl>
         <dt><a href="{{url_for('add_checkouts')}}">Checkouts</a></dt>
@@ -32,8 +32,8 @@
         <dd>Page for adding a copy of a specific Title to the library.</dd>
       </dl>
     </dd>
-		<dt>Titles Home</dt>
-    <dd>Subpage to provide links to different Titles-related functions.</dd>
+		<dt>Titles</dt>
+    <!-- <dd>Subpage to provide links to different Titles-related functions.</dd> -->
     <dd>
       <dl>
         <dt><a href="{{url_for('add_titles')}}">Add Titles</a></dt>
@@ -41,24 +41,22 @@
         <dt><a href="{{url_for('search_titles')}}">Search Titles</a></dt>
         <dd>Allows searching the contents of the system by title. From here users can update detail titles in the system.</dd>
 				<dt><a href="{{url_for('search_titles')}}">Update Title</a></dt>
-        <dd>Allows modifying the details of a given title and managing (adding/removing) relationsships to Subjects and Creators</dd>
+        <dd>Allows modifying the details of a given title and managing (adding/removing) relationships to Subjects and Creators</dd>
       </dl>
     </dd>
     <dl>
-      <dt><a href="{{url_for('subjects')}}">Subjects Home</a></dt>
-      <dd>Subpage to provide links to different Subjects-related functions.</dd>
+      <dt>Subjects</dt>
       <dt><a href="{{url_for('add_subjects')}}">Add Subjects</a></dt>
-      <dd>Page for manipulating the Subjects table. Allows adding a new entry to Subjects via a form.</dd>
+      <dd>Page for adding new entries to the Subjects table via a form.</dd>
       <dt><a href="{{url_for('view_subjects')}}">Sort by Subjects</a></dt>
       <dd>Allows user to see titles associated with each subject.</dd>
     </dl>
     <dl>
-      <dt><a href="{{url_for('creators')}}">Creators Home</a></dt>
-      <dd>Subpage to provide links to different Creators related functions.</dd>
+      <dt>Creators</dt>
       <dt><a href="{{url_for('add_creators')}}">Add Creators</a></dt>
-      <dd>Page for manipulating the Creators table. Allows adding a new entry to Creators via a form.</dd>
+      <dd>Page for adding new entries to the Creators table via a form.</dd>
       <dt><a href="{{url_for('view_creators')}}">Search Creators</a></dt>
-      <dd>Allows user to search for Creators and see Titles associated with them.</dd>
+      <dd>Allows user to search for Creators in the system.</dd>
     </dl>
   </dl>
 {% endblock %}
