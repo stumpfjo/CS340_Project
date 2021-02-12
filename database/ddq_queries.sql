@@ -80,3 +80,12 @@ INSERT INTO `Borrowers`
   ('Mary','Moe','mary@mail.com','567 Anystreet','Sometown','OR','98765'),
   ('July','Dooley','july@greatstuff.com','123 Avenue A','Sometown','OR','98765'),
   ('Anja','Ravendale','a_r@test.com','123 South Dr.','Sometown','OR','98765');
+
+INSERT INTO Titles
+  (title_text, publication_year, edition, language, call_number) VALUES
+  ('Relational Database Design and Implementation', 2016, '4', 'English', '005.756'),
+  ('Frankly, Fitz!', 1992, NULL, 'English', '976.3063092'),
+  ('Akata Witch', 2011, '1st US', 'English', 'FIC'),
+  ('Tacopedia', 2015, 'English', 'English', '641.840972'),
+  ('Workbenches: from Design and Thoery to Construction & Use', 2015, 'Revised', 'English', '684.18'),
+  ('Colonel Roosevelt', 2011, 'Trade Paperback', 'English', '973.911092');
