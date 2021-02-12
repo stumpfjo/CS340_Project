@@ -2,6 +2,14 @@
 
 {% block content %}
 <h1>Titles</h1>
+  <form method="GET" action="{{url_for('search_titles')}}">
+    <p>
+    <input type="radio" id="all" name="filterType" value="all">
+    <label for="all">All Titles</label>
+    <input type="radio" id="collection" name="filterType" value="collection" checked="checked">
+    <label for="collection">In Collection</label>
+    <input type="submit" name="filter" value="Filter">
+  </form>
     <!--<h2>Search By Title</h2>
     <form id="search_titles">
       <fieldset>
