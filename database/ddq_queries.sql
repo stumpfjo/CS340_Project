@@ -70,3 +70,13 @@ CREATE TABLE `Items` (
 --
 -- Table structure for table `Title_Subjects`
 --
+
+--
+-- Sample Data
+--
+INSERT INTO `Borrowers`
+  (first_name, last_name, email, street_address, city_name, state, zip_code) VALUES
+  ('John','Doe','john@example.com','123 Anystreet','Sometown','OR','98765'),
+  ('Mary','Moe','mary@mail.com','567 Anystreet','Sometown','OR','98765'),
+  ('July','Dooley','july@greatstuff.com','123 Avenue A','Sometown','OR','98765'),
+  ('Anja','Ravendale','a_r@test.com','123 South Dr.','Sometown','OR','98765');
