@@ -1,0 +1,1 @@
+-- These are some Database Manipulation queries for a partially implemented Project Website 
