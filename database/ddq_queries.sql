@@ -49,7 +49,7 @@ CREATE TABLE `Items` (
   `title_id` int NOT NULL,
   `borrower_id` int DEFAULT NULL,
   `due_date` date DEFAULT NULL,
-  `cutter_number` varchar(255) NOT NULL,
+  `cutter_number` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`item_id`),
   CONSTRAINT `item2title` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `item2borrower` FOREIGN KEY (`borrower_id`) REFERENCES `Borrowers` (`borrower_id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -89,3 +89,10 @@ INSERT INTO Titles
   ('Tacopedia', 2015, 'English', 'English', '641.840972'),
   ('Workbenches: from Design and Thoery to Construction & Use', 2015, 'Revised', 'English', '684.18'),
   ('Colonel Roosevelt', 2011, 'Trade Paperback', 'English', '973.911092');
+
+INSERT INTO items
+  (title_id, borrower_id, due_date, cutter_number) VALUES
+  (1, 1, '2021-04-01', 'H299'),
+  (2, NULL, NULL, 'F557'),
+  (3,NULL,NULL,NULL),
+  (5,3, '2020-12-31', 'SCH411');
