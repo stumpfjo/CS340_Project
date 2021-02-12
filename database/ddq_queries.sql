@@ -2,9 +2,13 @@
 -- Drop tables if they already exist.
 --
 
+DROP TABLE IF EXISTS `Title_Creators`;
+DROP TABLE IF EXISTS `Title_Subjects`;
 DROP TABLE IF EXISTS `Items`;
 DROP TABLE IF EXISTS `Titles`;
 DROP TABLE IF EXISTS `Borrowers`;
+DROP TABLE IF EXISTS `Creators`;
+DROP TABLE IF EXISTS `Subjects`;
 
 --
 -- Table structure for table `Titles`
@@ -50,3 +54,19 @@ CREATE TABLE `Items` (
   CONSTRAINT `item2title` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `item2borrower` FOREIGN KEY (`borrower_id`) REFERENCES `Borrowers` (`borrower_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `Creators`
+--
+
+--
+-- Table structure for table `Subjects`
+--
+
+--
+-- Table structure for table `Title_Creators`
+--
+
+--
+-- Table structure for table `Title_Subjects`
+--
