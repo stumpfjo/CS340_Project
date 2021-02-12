@@ -1,8 +1,15 @@
 --
+-- Drop tables if they already exist.
+--
+
+DROP TABLE IF EXISTS `Items`;
+DROP TABLE IF EXISTS `Titles`;
+DROP TABLE IF EXISTS `Borrowers`;
+
+--
 -- Table structure for table `Titles`
 --
 
-DROP TABLE IF EXISTS `Titles`;
 CREATE TABLE `Titles` (
   `title_id` int NOT NULL AUTO_INCREMENT,
   `title_text` varchar(255) NOT NULL,
@@ -17,7 +24,6 @@ CREATE TABLE `Titles` (
 -- Table structure for table `Borrowers`
 --
 
-DROP TABLE IF EXISTS `Borrowers`;
 CREATE TABLE `Borrowers` (
   `borrower_id` int NOT NULL AUTO_INCREMENT,
   `first_name` varchar(255) NOT NULL,
@@ -28,4 +34,19 @@ CREATE TABLE `Borrowers` (
   `state` char(2) DEFAULT NULL,
   `zip_code` varchar(9) DEFAULT NULL,
   PRIMARY KEY (`borrower_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `Items`
+--
+
+CREATE TABLE `Items` (
+  `item_id` int NOT NULL AUTO_INCREMENT,
+  `title_id` int NOT NULL,
+  `borrower_id` int DEFAULT NULL,
+  `due_date` date DEFAULT NULL,
+  `cutter_number` varchar(255) NOT NULL,
+  PRIMARY KEY (`item_id`),
+  CONSTRAINT `item2title` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `item2borrower` FOREIGN KEY (`borrower_id`) REFERENCES `Borrowers` (`borrower_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
