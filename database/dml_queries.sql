@@ -97,3 +97,5 @@ SELECT
 FROM
   Subjects
 WHERE subject_id IN (select subject_id FROM Title_Subjects WHERE title_id = :idInput);
+
+-- Additional queries here for Subjects, Creators, and M:M relationships.
