@@ -59,6 +59,13 @@ CREATE TABLE `Items` (
 -- Table structure for table `Creators`
 --
 
+CREATE TABLE `Creators` (
+    `creator_id` int NOT NULL AUTO_INCREMENT,
+    `first_name` varchar(255),
+    `last_name` varchar(255) NOT NULL,
+    PRIMARY KEY (`creator_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 --
 -- Table structure for table `Subjects`
 --
