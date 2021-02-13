@@ -93,6 +93,15 @@ CREATE TABLE `Title_Creators` (
 -- Table structure for table `Title_Subjects`
 --
 
+CREATE TABLE `Title_Subjects` (
+    `subject_catalog_id` int(11) NOT NULL AUTO_INCREMENT,
+    `title_id` int(11) NOT NULL,
+    `subject_id` int(11) NOT NULL,
+    PRIMARY KEY (`subject_catalog_id`),
+    CONSTRAINT `Title_Subjects_fk_title_id` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `Title_Subjects_fk_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `Subjects` (`subject_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 --
 -- Sample Data
 --
