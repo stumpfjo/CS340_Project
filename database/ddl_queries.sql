@@ -82,8 +82,8 @@ CREATE TABLE `Subjects` (
 
 CREATE TABLE `Title_Creators` (
     `creator_catalog_id` int NOT NULL AUTO_INCREMENT,
-    `title_id` int(11) NOT NULL,
-    `creator_id` int(11) NOT NULL,
+    `title_id` int NOT NULL,
+    `creator_id` int NOT NULL,
     PRIMARY KEY (`creator_catalog_id`),
     CONSTRAINT `Title_Creators_fk_title_id` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `Title_Creators_fk_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `Creators` (`creator_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -94,9 +94,9 @@ CREATE TABLE `Title_Creators` (
 --
 
 CREATE TABLE `Title_Subjects` (
-    `subject_catalog_id` int(11) NOT NULL AUTO_INCREMENT,
-    `title_id` int(11) NOT NULL,
-    `subject_id` int(11) NOT NULL,
+    `subject_catalog_id` int NOT NULL AUTO_INCREMENT,
+    `title_id` int NOT NULL,
+    `subject_id` int NOT NULL,
     PRIMARY KEY (`subject_catalog_id`),
     CONSTRAINT `Title_Subjects_fk_title_id` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `Title_Subjects_fk_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `Subjects` (`subject_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -127,3 +127,47 @@ INSERT INTO items
   (2, NULL, NULL, 'F557'),
   (3,NULL,NULL,NULL),
   (5,3, '2020-12-31', 'SCH411');
+
+INSERT INTO `Creators`
+  (`first_name`, `last_name`) VALUES
+  ('Ernest', 'Hemingway'),
+  ('Mark', 'Twain'),
+  ('J.K.', 'Rowling'),
+  ('Stephen', 'King'),
+  ('James Edward', 'Fitzmorris'),
+  ('Kenneth D.', 'Myers'),
+  ('Nnedi', 'Okorafor'),
+  ('Edmund', 'Morris');
+
+INSERT INTO `Subjects`
+  (`subject_heading`) VALUES
+  ('Fantasy'),
+  ('Science Fiction'),
+  ('Action & Adventure'),
+  ('Mystery'),
+  ('Horror'),
+  ('Romance'),
+  ('Biography'),
+  ('Textbook');
+
+INSERT INTO `Title_Creators`
+  (`title_id`, `creator_id`) VALUES
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Frankly, Fitz!'),
+    (SELECT creator_id FROM `Creators` WHERE first_name = 'James Edward' and last_name = 'Fitzmorris')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Frankly, Fitz!'),
+    (SELECT creator_id FROM `Creators` WHERE first_name = 'Kenneth D.' and last_name = 'Myers')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Akata Witch'),
+    (SELECT creator_id FROM `Creators` WHERE first_name = 'Nnedi' and last_name = 'Okorafor')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Colonel Roosevelt'),
+    (SELECT creator_id FROM `Creators` WHERE first_name = 'Edmund' and last_name = 'Morris'));
+
+INSERT INTO `Title_Subjects`
+  (`title_id`, `subject_id`) VALUES
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Colonel Roosevelt'),
+    (SELECT subject_id FROM `Subjects` WHERE subject_heading = 'Biography')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Frankly, Fitz!'),
+    (SELECT subject_id FROM `Subjects` WHERE subject_heading = 'Biography')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Akata Witch'),
+    (SELECT subject_id FROM `Subjects` WHERE subject_heading = 'Fantasy')),
+  ((SELECT title_id FROM `Titles` WHERE title_text = 'Relational Database Design and Implementation'),
+    (SELECT subject_id FROM `Subjects` WHERE subject_heading = 'Textbook'));
