@@ -70,9 +70,24 @@ CREATE TABLE `Creators` (
 -- Table structure for table `Subjects`
 --
 
+CREATE TABLE `Subjects` (
+    `subject_id` int NOT NULL AUTO_INCREMENT,
+    `subject_heading` varchar(255) NOT NULL,
+    PRIMARY KEY (`subject_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 --
 -- Table structure for table `Title_Creators`
 --
+
+CREATE TABLE `Title_Creators` (
+    `creator_catalog_id` int NOT NULL AUTO_INCREMENT,
+    `title_id` int(11) NOT NULL,
+    `creator_id` int(11) NOT NULL,
+    PRIMARY KEY (`creator_catalog_id`),
+    CONSTRAINT `Title_Creators_fk_title_id` FOREIGN KEY (`title_id`) REFERENCES `Titles` (`title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `Title_Creators_fk_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `Creators` (`creator_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `Title_Subjects`
