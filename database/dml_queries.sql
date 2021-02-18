@@ -98,4 +98,50 @@ FROM
   Subjects
 WHERE subject_id IN (select subject_id FROM Title_Subjects WHERE title_id = :idInput);
 
--- Additional queries here for Subjects, Creators, and M:M relationships.
+-- Add a new creator from the add_creators page
+INSERT INTO `Creators` (`first_name`, `last_name`)
+VALUES (:fnameInput, :lnameInput);
+
+-- Add a new subject from the add_subjects page
+INSERT INTO `Subjects` (`subject_heading`)
+VALUES (:subjectInput);
+
+-- Display creators' first and last name in the view_creators page
+SELECT first_name, last_name FROM Creators;
+
+-- get all subjects to populate the subjects dropdown in view_subjects page
+SELECT subject_heading FROM Subjects;
+
+-- get all titles associated with selected subject in view_subjects page
+SELECT Titles.title_text, Titles.language, Titles.publication_year FROM Titles
+JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id
+JOIN Subjects ON Title_Subjects.subject_id = Subjects.subject_id
+WHERE Subjects.subject_heading = :subjectInput;
+
+-- display all creators associated with a title in update/details tab
+SELECT Creators.first_name, Creators.last_name FROM Creators
+JOIN Title_Creators ON Creators.creator_id = Title_Creators.creator_id
+JOIN Titles ON Title_Creators.title_id = Titles.title_id
+WHERE Titles.title_id = :titleIdInput;
+
+-- display all subjects associated with a title in update/details tab
+SELECT Subjects.subject_heading FROM Subjects
+JOIN Title_Subjects ON Title_Subjects.subject_id = Subjects.subject_id
+JOIN Titles ON Titles.title_id = Title_Subjects.title_id
+WHERE Titles.title_id = :titleIdInput;
+
+-- add creator/title relationship for a specific title in update/details tab
+INSERT INTO `Title_Creators` (`title_id`, `creator_id`)
+VALUES (:titleIdInput, :creatorIdInput);
+
+-- add subject/title relationship for a specific title in update/details tab
+INSERT INTO `Title_Subjects` (`title_id`, `subject_id`)
+VAULES (:titleIdInput, :subjectInput);
+
+-- remove creator/title relationship for a specific title in update/details tab
+DELETE FROM Title_Creators
+WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput
+
+-- remove subject/title relationship for a specific title in update/details tab
+DELETE FROM Title_Subjects
+WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput
