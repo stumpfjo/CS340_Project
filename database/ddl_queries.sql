@@ -121,7 +121,7 @@ INSERT INTO Titles
   ('Workbenches: from Design and Thoery to Construction & Use', 2015, 'Revised', 'English', '684.18'),
   ('Colonel Roosevelt', 2011, 'Trade Paperback', 'English', '973.911092');
 
-INSERT INTO items
+INSERT INTO Items
   (title_id, borrower_id, due_date, cutter_number) VALUES
   (1, 1, '2021-04-01', 'H299'),
   (2, NULL, NULL, 'F557'),
