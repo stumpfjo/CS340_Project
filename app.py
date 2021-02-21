@@ -4,8 +4,10 @@
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
 
 from flask import Flask, render_template, request, json
-# import database.db_connector as db
+import database.db_connector as db
 import os
+
+db_connection = db.connect_to_database()
 
 # Configuration
 
