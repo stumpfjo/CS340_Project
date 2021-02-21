@@ -8,6 +8,7 @@
   <fieldset>
     <legend>Display Borrowers Matching</legend>
     <p>
+      <input type="hidden" id="displayType" name="view" value="filter">
       <input type="checkbox" id="searchFirstName" name="searchBy" value="fname">
       <label for="searchFirstName">First Name:</label>
       <input type="text" id="findFirstName" name=fname>
@@ -51,6 +52,43 @@
     </tr>
   </thead>
   <tbody id="myTable">
+    <!--iterate through the borrowers-->
+    {% for borrower in borrowers %}
+    <tr>
+      <td>{{borrower['first_name']}}</td>
+      <td>{{borrower['last_name'] }}</td>
+      <td>{{borrower['email']}}</td>
+      <td>{{borrower['street_address']}}</td>
+      <td>{{borrower['city_name']}}</td>
+      <td>{{borrower['state']}}</td>
+      <td>{{borrower['zip_code']}}</td>
+      <td>
+        <form method="get" action="{{url_for('update_borrowers')}}">
+          <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
+          <input type="submit" name="update" value="Update">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('view_checkouts')}}">
+          <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
+          <input type="submit" name="view_checkouts" value="View Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_checkouts')}}">
+          <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
+          <input type="submit" name="add_checkouts" value="Add Checkouts">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('delete_borrower')}}">
+          <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
+          <input type="submit" name="delete" value="Delete">
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <!--
     <tr>
       <td>John</td>
       <td>Doe</td>
@@ -183,6 +221,7 @@
         </form>
       </td>
     </tr>
+    -->
   </tbody>
 </table>
 

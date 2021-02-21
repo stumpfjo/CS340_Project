@@ -41,9 +41,23 @@ def delete_borrower():
 def update_borrowers():
     return render_template("borrowers/update_borrowers.html")
 
-@app.route('/borrowers/view_borrowers')
+@app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
-    return render_template("borrowers/view_borrowers.html")
+    default_query = "SELECT * FROM Borrowers;"
+    view_type = request.args.get("view")
+    if view_type is None or view_type == "all":
+        # Generic Query
+        query = default_query
+    else:
+        # TO-DO parse the search and create tailored query
+        query = default_query
+
+    # Query execution
+    cursor = db.execute_query(db_connection=db_connection, query=query)
+
+    # Grab the results
+    results = cursor.fetchall()
+    return render_template("borrowers/view_borrowers.html", borrowers=results)
 
 @app.route('/borrowers/view_checkouts')
 def view_checkouts():
