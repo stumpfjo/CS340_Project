@@ -43,17 +43,29 @@ def update_borrowers():
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
-    default_query = "SELECT * FROM Borrowers;"
-    view_type = request.args.get("view")
-    if view_type is None or view_type == "all":
-        # Generic Query
-        query = default_query
-    else:
-        # TO-DO parse the search and create tailored query
-        query = default_query
+    # Default Query to get all Borrowers
+    query = "SELECT * FROM Borrowers"
+    query_params = None
 
-    # Query execution
-    cursor = db.execute_query(db_connection=db_connection, query=query)
+    #Modify the query string to do searches
+    view_type = request.args.get("view")
+
+    if view_type == "filter":
+        if request.args.get("searchBy") == "idNum" and request.args.get('idNum') is not None:
+            query_params = {'id': request.args.get('idNum')}
+            query = query + " WHERE borrower_id = %(id)s"
+        elif request.args.get("searchBy") == "lname" and request.args.get('lname') is not None:
+            if request.args.get('lNameMatchType') == "exact":
+                query_params = {'lname': request.args.get('lname')}
+                query = query + " WHERE last_name = %(lname)s"
+            else:
+                search_string = '%' + request.args.get('lname') + '%'
+                query_params = {'lname': search_string}
+                query = query + " WHERE last_name LIKE %(lname)s"
+
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
 
     # Grab the results
     results = cursor.fetchall()

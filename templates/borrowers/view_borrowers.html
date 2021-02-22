@@ -7,31 +7,31 @@
 <form id="newBorrowerForm">
   <fieldset>
     <legend>Display Borrowers Matching</legend>
-    <p>
-      <input type="hidden" id="displayType" name="view" value="filter">
+    <!--<p>
       <input type="checkbox" id="searchFirstName" name="searchBy" value="fname">
       <label for="searchFirstName">First Name:</label>
       <input type="text" id="findFirstName" name=fname>
       <input type="radio" id="fExact" name="fNameMatchType" value="exact">
       <label for="fExact">Exact Match</label>
       <input type="radio" id="fPartial" name="fNameMatchType" value="partial" checked="checked">
-      <label for="fPartial">Partial Match (Initial)</label>
+      <label for="fPartial">Partial Match (Initial)</label>-->
     <p>
-      <input type="checkbox" id="searchLastName" name="searchBy" value="lname" checked="checked">
+      <input type="hidden" id="displayType" name="view" value="filter">
+      <input type="radio" id="searchLastName" name="searchBy" value="lname" {% if request.args.get('searchBy') == None or  request.args.get('searchBy') == 'lname' %}checked="checked"{% endif %}>
       <label for="searchLastName">Last Name:</label>
-      <input type="text" id="findLastName" name=fname>
-      <input type="radio" id="lExact" name="lNameMatchType" value="exact">
+      <input type="text" id="findLastName" name=lname value={% if request.args.get('lname') == None %}""{% else %}"{{request.args.get('lname')}}" {% endif %}>
+      <input type="radio" id="lExact" name="lNameMatchType" value="exact" {% if request.args.get('lNameMatchType') == "exact"  %}checked="checked"{% endif %}>
       <label for="fExact">Exact Match</label>
-      <input type="radio" id="lPartial" name="lNameMatchType" value="partial" checked="checked">
-      <label for="lPartial">Partial Match (Initial)</label>
-    <p>
+      <input type="radio" id="lPartial" name="lNameMatchType" value="partial" {% if request.args.get('lNameMatchType') == None or request.args.get('lNameMatchType') == "partial"  %}checked="checked"{% endif %}>
+      <label for="lPartial">Partial Match</label>
+    <!--<p>
       <input type="checkbox" id="searchLastName" name="searchBy" value="zip">
       <label for="searchZipCode">Zip Code:</label>
-      <input type="text" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" id="findZipCode" name=zip>
+      <input type="text" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" id="findZipCode" name=zip>-->
     <p>
-      <input type="checkbox" id="searchId" name="searchBy" value="idNum">
+      <input type="radio" id="searchId" name="searchBy" value="idNum" {% if request.args.get('searchBy') == 'idNum' %}checked="checked"{% endif %}>
       <label for="searchId">Borrower Number:</label>
-      <input type="number" id="findId" name=idNum>
+      <input type="number" id="findId" name=idNum value={{request.args.get('idNum')}}>
     <p>
       <input type="submit" id="findBorrower" value="Find Borrower(s)">
   </fieldset>
