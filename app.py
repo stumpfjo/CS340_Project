@@ -29,9 +29,104 @@ def index():
 def books():
     return render_template("books.html")
 '''
-@app.route('/borrowers/add_borrowers')
+@app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
-    return render_template("borrowers/add_borrowers.html")
+    fill_params = {
+        'fname': "",
+        'lname': "",
+        'email': "",
+        'saddr': "",
+        'city': "",
+        'state': "OR",
+        'zip': "",
+    }
+    states = {
+        "AL": "Alabama",
+        "AK": "Alaska",
+        "AZ": "Arizona",
+        "AR": "Arkansas",
+        "CA": "California",
+        "CO": "Colorado",
+        "CT": "Connecticut",
+        "DE": "Delaware",
+        "DC": "District Of Columbia",
+        "FL": "Florida",
+        "GA": "Georgia",
+        "HI": "Hawaii",
+        "ID": "Idaho",
+        "IL": "Illinois",
+        "IN": "Indiana",
+        "IA": "Iowa",
+        "KS": "Kansas",
+        "KY": "Kentucky",
+        "LA": "Louisiana",
+        "ME": "Maine",
+        "MD": "Maryland",
+        "MA": "Massachusetts",
+        "MI": "Michigan",
+        "MN": "Minnesota",
+        "MS": "Mississippi",
+        "MO": "Missouri",
+        "MT": "Montana",
+        "NE": "Nebraska",
+        "NV": "Nevada",
+        "NH": "New Hampshire",
+        "NJ": "New Jersey",
+        "NM": "New Mexico",
+        "NY": "New York",
+        "NC": "North Carolina",
+        "ND": "North Dakota",
+        "OH": "Ohio",
+        "OK": "Oklahoma",
+        "OR": "Oregon",
+        "PA": "Pennsylvania",
+        "RI": "Rhode Island",
+        "SC": "South Carolina",
+        "SD": "South Dakota",
+        "TN": "Tennessee",
+        "TX": "Texas",
+        "UT": "Utah",
+        "VT": "Vermont",
+        "VA": "Virginia",
+        "WA": "Washington",
+        "WV": "West Virginia",
+        "WI": "Wisconsin",
+        "WY": "Wyoming"
+    }
+    add_success = "none"
+    message_params = None
+    if request.method == 'POST':
+        query = "INSERT INTO Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code) VALUES (%(fname)s, %(lname)s, %(email)s, %(saddr)s, %(city)s, %(state)s, %(zip)s)"
+        query_params = {
+            'fname': request.form.get('fname'),
+            'lname': request.form.get('lname'),
+            'email': request.form.get('emailAddr'),
+            'saddr': request.form.get('streetAddr'),
+            'city': request.form.get('cityName'),
+            'state': request.form.get('stateAbbrev'),
+            'zip': request.form.get('zipCode'),
+        }
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            add_success = "added"
+            message_params = {
+                'fname': request.form.get('fname'),
+                'lname': request.form.get('lname'),
+                'id': cursor.lastrowid
+            }
+        except:
+            add_success = "error"
+            fill_params = query_params
+    return render_template(
+        "borrowers/add_borrowers.html",
+        success=add_success,
+        borrower=fill_params,
+        message=message_params,
+        states=states
+    )
+
 
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
