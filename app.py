@@ -31,6 +31,7 @@ def books():
 '''
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
+    # Default values to pass for a GET.
     fill_params = {
         'fname': "",
         'lname': "",
@@ -40,6 +41,7 @@ def add_borrowers():
         'state': "OR",
         'zip': "",
     }
+    # Used to populate select box in template
     states = {
         "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
         "CA": "California", "CO": "Colorado", "CT": "Connecticut",
@@ -58,9 +60,12 @@ def add_borrowers():
         "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
         "WI": "Wisconsin", "WY": "Wyoming"
     }
+    # Default values
     add_success = "none"
     message_params = None
     status = 200
+
+    # Attempt to process a new Borrower
     if request.method == 'POST':
         query = "INSERT INTO Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code) VALUES (%(fname)s, %(lname)s, %(email)s, %(saddr)s, %(city)s, %(state)s, %(zip)s)"
         query_params = {
@@ -72,6 +77,7 @@ def add_borrowers():
             'state': request.form.get('stateAbbrev'),
             'zip': request.form.get('zipCode'),
         }
+        # If we succeed, fill out the response accordingly
         try:
             cursor = db.execute_query(
                 db_connection=db_connection,
@@ -84,9 +90,12 @@ def add_borrowers():
             }
             status = 201
         except:
+            # On a failure, preserve the inputs so the Template can fill them back in.
             status = 400
             add_success = "error"
             fill_params = query_params
+
+    # Will have the coreect format for all scenarios
     return render_template(
         "borrowers/add_borrowers.html",
         success=add_success,
@@ -98,10 +107,12 @@ def add_borrowers():
 
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
+    # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
 
 @app.route('/borrowers/update_borrowers')
 def update_borrowers():
+    # step 6 - Update
     return render_template("borrowers/update_borrowers.html")
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
@@ -141,18 +152,20 @@ def view_checkouts():
     query_params = {'b_id': request.args.get('id')}
     status = 200
     try:
+        # nonsense borrower_ids should generate an empty result
         cursor = db.execute_query(
             db_connection=db_connection,
             query=query, query_params=query_params)
         results = cursor.fetchall()
-        print(results)
     except:
+        # Should not get here
         abort(400)
 
     return render_template("borrowers/view_checkouts.html", results=results), status
 
 @app.route('/items/add_checkouts')
 def add_checkouts():
+    #step 6 - Update
     return render_template("items/add_checkouts.html")
 
 @app.route('/subjects')
@@ -173,18 +186,22 @@ def titles():
 '''
 @app.route('/titles/add_titles')
 def add_titles():
+    # step 5
     return render_template("titles/add_titles.html")
 
 @app.route('/titles/search_titles')
 def search_titles():
+    # step 5
     return render_template("titles/search_titles.html")
 
 @app.route('/titles/update_title', methods=['GET', 'POST'])
 def update_title():
+    # step 6 - Update
     return render_template("titles/update_title.html")
 
 @app.route('/items/add_item')
 def add_item():
+    # step 5
     return render_template("/items/add_item.html")
 '''
 @app.route('/items')
@@ -197,6 +214,7 @@ def checkout_item():
 '''
 @app.route('/items/return_item.html', methods=['POST'])
 def return_item():
+    # step 6 - Update
     return render_template("items/return_item.html")
 '''
 @app.route('/items/manage')
