@@ -95,6 +95,7 @@ def add_borrowers():
     }
     add_success = "none"
     message_params = None
+    status = 200
     if request.method == 'POST':
         query = "INSERT INTO Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code) VALUES (%(fname)s, %(lname)s, %(email)s, %(saddr)s, %(city)s, %(state)s, %(zip)s)"
         query_params = {
@@ -116,7 +117,9 @@ def add_borrowers():
                 'lname': request.form.get('lname'),
                 'id': cursor.lastrowid
             }
+            status = 201
         except:
+            status = 400
             add_success = "error"
             fill_params = query_params
     return render_template(
@@ -125,7 +128,7 @@ def add_borrowers():
         borrower=fill_params,
         message=message_params,
         states=states
-    )
+    ), status
 
 
 @app.route('/borrowers/delete_borrower')
@@ -166,9 +169,22 @@ def view_borrowers():
     results = cursor.fetchall()
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
-@app.route('/borrowers/view_checkouts')
+@app.route('/borrowers/view_checkouts', methods=['GET'])
 def view_checkouts():
-    return render_template("borrowers/view_checkouts.html")
+    results = None
+    query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
+    query_params = {'b_id': request.args.get('id')}
+    status = 200
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchall()
+        print(results)
+    except:
+        abort(400)
+
+    return render_template("borrowers/view_checkouts.html", results=results), status
 
 @app.route('/items/add_checkouts')
 def add_checkouts():
@@ -214,7 +230,7 @@ def items():
 def checkout_item():
     return render_template("items/checkout.html")
 '''
-@app.route('/items/return_item.html')
+@app.route('/items/return_item.html', methods=['POST'])
 def return_item():
     return render_template("items/return_item.html")
 '''
@@ -255,6 +271,11 @@ def view_title_creators():
 def view_title_subjects():
     return render_template("relationships/view_title_subjects.html")
 '''
+
+@app.errorhandler(400)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('400.html'), 400
 # Listener
 
 if __name__ == "__main__":
