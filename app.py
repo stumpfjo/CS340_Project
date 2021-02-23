@@ -3,7 +3,7 @@
 # Copied from /OR/ Adapted from /OR/ Based on:
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
 
-from flask import Flask, render_template, request, json, jsonify
+from flask import Flask, render_template, request, json, jsonify, abort
 import database.db_connector as db
 import os
 
@@ -219,10 +219,38 @@ def add_titles():
     else:
         return render_template("titles/add_titles.html"), 200
 
-@app.route('/titles/search_titles')
+@app.route('/titles/search_titles', methods=['GET'])
 def search_titles():
     # step 5
-    return render_template("titles/search_titles.html")
+    if request.args.get('search') != 'Search':
+        return render_template("titles/search_titles.html", titles=None)
+    else:
+        query = "SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id"
+
+        # Select the correct search type for WHERE clause
+        search_string = request.args.get('title_text')
+        if request.args.get('t_match_type') == 'partial':
+            search_string = '%' + search_string + '%'
+            query = query + " WHERE title_text LIKE %(t_text)s"
+        else:
+            query = query + " WHERE title_text = %(t_text)s"
+        query_params = {'t_text': search_string}
+
+        # Add additional limits if required
+        if request.args.get('t_collection_type') == 'in_collection':
+            query = query + " AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0"
+        elif request.args.get('t_collection_type') == 'on_shelf':
+            query = query + " AND IFNULL(os.on_shelf,0) > 0"
+
+        # run the query
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            results = cursor.fetchall()
+        except:
+            abort(400)
+        return render_template("titles/search_titles.html", titles=results)
 
 @app.route('/titles/update_title', methods=['GET', 'POST'])
 def update_title():

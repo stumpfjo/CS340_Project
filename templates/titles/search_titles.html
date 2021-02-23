@@ -2,37 +2,37 @@
 
 {% block content %}
 <h1>Titles</h1>
-  <form method="GET" action="{{url_for('search_titles')}}">
+  <!--<form method="GET" action="{{url_for('search_titles')}}">
     <p>
     <input type="radio" id="all" name="filterType" value="all">
     <label for="all">All Titles</label>
     <input type="radio" id="collection" name="filterType" value="collection" checked="checked">
     <label for="collection">In Collection</label>
     <input type="submit" name="filter" value="Filter">
-  </form>
-    <!--<h2>Search By Title</h2>
-    <form id="search_titles">
+  </form>-->
+    <h2>Search By Title</h2>
+    <form id="search_titles" method="GET" action="{{url_for('search_titles')}}">
       <fieldset>
-        <legend>New Title Information</legend>
+        <legend>Search Parameters:</legend>
         <p>
           <label for="title_text">Title:</label>
           <input type="text" id="title_text" name="title_text">
           <input type="radio" id="t_exact" name="t_match_type" value="exact">
           <label for="t_exact">Exact Match</label>
-          <input type="radio" id="t_artial" name="t_match_type" value="partial" checked="checked">
-          <label for="fPartial">Partial Match</label>
+          <input type="radio" id="t_partial" name="t_match_type" value="partial" checked="checked">
+          <label for="t_partial">Partial Match</label>
         <p>
-          <input type="radio" id="t_all" name="t_collection_type" value="all">
+          <input type="radio" id="t_all" name="t_collection_type" value="all" checked="checked">
           <label for="t_all">All Titles</label>
           <input type="radio" id="t_in_collection" name="t_collection_type" value="in_collection">
           <label for="t_in_collection">In Collection</label>
           <input type="radio" id="t_on_shelf" name="t_collection_type" value="on_shelf">
           <label for="t_on_shelf">On Shelf</label>
         <p>
-          <input type="submit" id="search_titles" value="Search">
+          <input type="submit" name="search" value="Search">
       </fieldset>
-    </form>-->
-<p>Filter Item List based on any field:</p>
+    </form>
+<p>Filter within results based on any field:</p>
   <input class="form-control" id="myInput" type="text" placeholder="Search...">
 <br>
 <h2>Results Display</h2>
@@ -43,9 +43,35 @@
       <th>Title</th>
       <th>Language</th>
       <th>Publication Year</th>
+      <th>On Shelf</th>
+      <th>Checked Out</th>
     </tr>
   </thead>
   <tbody>
+    {% if titles is not none %}
+    {% for title in titles %}
+    <tr>
+      <td>{{title['title_text']}}</td>
+      <td>{{title['language']}}</td>
+      <td>{{title['publication_year']}}</td>
+      <td>{{title['num_checked_out']}}</td>
+      <td>{{title['num_on_shelf']}}</td>
+      <td>
+        <form method="get" action="{{url_for('update_title')}}">
+          <input type="hidden" value="{{title['title_id']}}" name="title_id">
+          <input type="submit" name="update" value="View/Update Details">
+        </form>
+      </td>
+      <td>
+        <form method="get" action="{{url_for('add_item')}}">
+          <input type="hidden" value="{{title['title_id']}}" name="title_id">
+          <input type="submit" name="add_item" value="Add Copy to Collection">
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    <!--
     <tr>
       <td>Three Body Problem</td>
       <td>Mandarin</td>
@@ -131,6 +157,7 @@
         </form>
       </td>
     </tr>
+    -->
   </tbody>
 </table>
 
