@@ -145,3 +145,9 @@ WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :c
 -- remove subject/title relationship for a specific title in update/details tab
 DELETE FROM Title_Subjects
 WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput
+
+
+SELECT t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0), IFNULL(os.on_shelf,0)
+FROM Titles AS t
+LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id
+LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id;
