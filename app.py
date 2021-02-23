@@ -3,7 +3,7 @@
 # Copied from /OR/ Adapted from /OR/ Based on:
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
 
-from flask import Flask, render_template, request, json
+from flask import Flask, render_template, request, json, jsonify
 import database.db_connector as db
 import os
 
@@ -77,6 +77,9 @@ def add_borrowers():
             'state': request.form.get('stateAbbrev'),
             'zip': request.form.get('zipCode'),
         }
+        for key in query_params.keys():
+            if query_params[key] == "":
+                query_params[key] = None
         # If we succeed, fill out the response accordingly
         try:
             cursor = db.execute_query(
@@ -184,10 +187,37 @@ def view_subjects():
 def titles():
     return render_template("titles.html")
 '''
-@app.route('/titles/add_titles')
+@app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
     # step 5
-    return render_template("titles/add_titles.html")
+    if request.method == 'POST':
+        query = "INSERT INTO Titles (title_text, publication_year, edition, language, call_number) VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s)"
+        request_data = request.json
+        query_params = {
+            't_text': request_data['new_title'],
+            'p_year': request_data['new_pub_year'],
+            'ed': request_data['new_edition'],
+            'lang': request_data['new_language'],
+            'c_num': request_data['new_call_num']
+        }
+        for key in query_params.keys():
+            if query_params[key] == "":
+                query_params[key] = None
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            # Tell the user we succeeded
+            results = {
+                'new_title_id': cursor.lastrowid,
+                'title_added': request_data['new_title']
+            }
+            return jsonify(results), 201
+        except:
+            # On a failure, preserve the inputs so the Template can fill them back in.
+            return jsonify(request_data), 400
+    else:
+        return render_template("titles/add_titles.html"), 200
 
 @app.route('/titles/search_titles')
 def search_titles():
