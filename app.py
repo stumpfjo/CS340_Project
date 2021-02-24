@@ -1,4 +1,4 @@
-# Citation for the following function:
+# Citation for the following app:
 # Date: 2020-02-07
 # Copied from /OR/ Adapted from /OR/ Based on:
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
@@ -7,11 +7,22 @@ from flask import Flask, render_template, request, json, jsonify, abort
 import database.db_connector as db
 import os
 
-db_connection = db.connect_to_database()
+# db_connection = db.connect_to_database()
 
 # Configuration
 
 app = Flask(__name__)
+
+
+# Citation for the following function:
+# Date: 2021-02-23
+# Copied from /OR/ Adapted from /OR/ Based on:
+# Source URL: https://stackoverflow.com/questions/47711689/error-while-using-pymysql-in-flask
+def get_db():
+    # Opens a new database connection per app.
+    if not hasattr(app, 'db'):
+        app.db = db.connect_to_database()
+    return app.db.connection()
 
 # Routes
 
@@ -31,6 +42,7 @@ def books():
 '''
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
+    db_connection = get_db()
     # Default values to pass for a GET.
     fill_params = {
         'fname': "",
@@ -120,6 +132,7 @@ def update_borrowers():
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
+    db_connection = get_db()
     # Default Query to get all Borrowers
     query = "SELECT * FROM Borrowers"
     query_params = None
@@ -150,6 +163,7 @@ def view_borrowers():
 
 @app.route('/borrowers/view_checkouts', methods=['GET'])
 def view_checkouts():
+    db_connection = get_db()
     results = None
     query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
     query_params = {'b_id': request.args.get('id')}
@@ -190,6 +204,7 @@ def titles():
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
     # step 5
+    db_connection = get_db()
     if request.method == 'POST':
         query = "INSERT INTO Titles (title_text, publication_year, edition, language, call_number) VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s)"
         request_data = request.json
@@ -222,6 +237,7 @@ def add_titles():
 @app.route('/titles/search_titles', methods=['GET'])
 def search_titles():
     # step 5
+    db_connection = get_db()
     if request.args.get('search') != 'Search':
         return render_template("titles/search_titles.html", titles=None)
     else:
