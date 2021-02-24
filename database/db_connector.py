@@ -1,6 +1,16 @@
+# Citation for the following file:
+# Date: 2021-02-23
+# Copied from /OR/ Adapted from /OR/ Based on:
+# Source URL: https://github.com/gkochera/CS340-demo-flask-app
+
+# use pymysql per piazza post https://piazza.com/class/kirqdpeo2581v2?cid=251
 import pymysql
 import os
 from dotenv import load_dotenv, find_dotenv
+# Adaptation from
+# https://stackoverflow.com/questions/47711689/error-while-using-pymysql-in-flask
+# to use fix issue with mysql connection timing out on flip
+from dbutils.persistent_db import PersistentDB
 
 # Load our environment variables from the .env file in the root of our project.
 load_dotenv(find_dotenv())
@@ -11,9 +21,14 @@ user = os.environ.get("340DBUSER")
 passwd = os.environ.get("340DBPW")
 db = os.environ.get("340DB")
 
+# Citation for the following function:
+# Date: 2021-02-23
+# Copied from /OR/ Adapted from /OR/ Based on:
+# Source URL: https://stackoverflow.com/questions/47711689/error-while-using-pymysql-in-flask
 def connect_to_database(this_host = host, this_user = user, this_passwd = passwd, this_db = db):
     '''
     connects to a database and returns a database objects
+    '''
     '''
     db_connection = pymysql.connect(
         host = this_host,
@@ -21,6 +36,11 @@ def connect_to_database(this_host = host, this_user = user, this_passwd = passwd
         passwd = this_passwd,
         db = this_db)
     return db_connection
+    '''
+    return PersistentDB(
+        creator = pymysql, # the rest keyword arguments belong to pymysql
+        host = this_host, user = this_user, password = this_passwd, database = this_db, charset = 'utf8mb4' , cursorclass = pymysql.cursors.DictCursor)
+
 
 def execute_query(db_connection = None, query = None, query_params = ()):
     '''
