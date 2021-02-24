@@ -140,11 +140,11 @@ VAULES (:titleIdInput, :subjectInput);
 
 -- remove creator/title relationship for a specific title in update/details tab
 DELETE FROM Title_Creators
-WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput
+WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput;
 
 -- remove subject/title relationship for a specific title in update/details tab
 DELETE FROM Title_Subjects
-WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput
+WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput;
 
 -- %(<identifier>)s used as parameter in following:
 
