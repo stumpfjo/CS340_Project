@@ -170,6 +170,7 @@ def view_borrowers():
 def view_checkouts():
     db_connection = get_db()
     results = None
+    # Query to SELECT checkouts for a certain borrower_id
     query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
     query_params = {'b_id': request.args.get('id')}
     status = 200
@@ -211,6 +212,7 @@ def add_titles():
     # step 5
     db_connection = get_db()
     if request.method == 'POST':
+        # Query to INSERT a new instance of Titles
         query = "INSERT INTO Titles (title_text, publication_year, edition, language, call_number) VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s)"
         request_data = request.json
         query_params = {
@@ -220,6 +222,7 @@ def add_titles():
             'lang': request_data['new_language'],
             'c_num': request_data['new_call_num']
         }
+        # Replace empty strings with NULL
         for key in query_params.keys():
             if query_params[key] == "":
                 query_params[key] = None
@@ -237,6 +240,7 @@ def add_titles():
             # On a failure, preserve the inputs so the Template can fill them back in.
             return jsonify(request_data), 400
     else:
+        # When we reach this page via get, send the form
         return render_template("titles/add_titles.html"), 200
 
 @app.route('/titles/search_titles', methods=['GET'])
@@ -273,10 +277,28 @@ def search_titles():
             abort(400)
         return render_template("titles/search_titles.html", titles=results)
 
-@app.route('/titles/update_title', methods=['GET', 'POST'])
+@app.route('/titles/update_title', methods=['GET', 'PUT'])
 def update_title():
-    # step 6 - Update
-    return render_template("titles/update_title.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        # step 6 - Update
+        return render_template("titles/update_title.html")
+    elif request.args.get('title_id') is None:
+        abort(400)
+    else:
+        # process the GET request
+        query = 'SELECT * FROM Titles WHERE title_id = %(t_id)s'
+        query_params = {'t_id': request.args.get('title_id')}
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        results = cursor.fetchone()
+        if results == None:
+            abort(400)
+        return render_template("titles/update_title.html", title_info=results)
 
 @app.route('/items/add_item')
 def add_item():
@@ -338,6 +360,7 @@ def view_title_subjects():
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('400.html'), 400
+
 # Listener
 
 if __name__ == "__main__":
