@@ -142,29 +142,35 @@ def view_borrowers():
 
     if view_type == "filter":
         if request.args.get("searchBy") == "idNum" and request.args.get('idNum') is not None:
+            # SELECT based on borrower_id
             query_params = {'id': request.args.get('idNum')}
             query = query + " WHERE borrower_id = %(id)s"
         elif request.args.get("searchBy") == "lname" and request.args.get('lname') is not None:
+            # Default to exact match
             if request.args.get('lNameMatchType') == "exact":
                 query_params = {'lname': request.args.get('lname')}
                 query = query + " WHERE last_name = %(lname)s"
             else:
+                # Use LIKE to do partial matches on last name
                 search_string = '%' + request.args.get('lname') + '%'
                 query_params = {'lname': search_string}
                 query = query + " WHERE last_name LIKE %(lname)s"
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+            # Grab the results
+        results = cursor.fetchall()
+    except:
+        abort(400)
 
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-
-    # Grab the results
-    results = cursor.fetchall()
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
 @app.route('/borrowers/view_checkouts', methods=['GET'])
 def view_checkouts():
     db_connection = get_db()
     results = None
+    # Query to SELECT checkouts for a certain borrower_id
     query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
     query_params = {'b_id': request.args.get('id')}
     status = 200
@@ -206,6 +212,7 @@ def add_titles():
     # step 5
     db_connection = get_db()
     if request.method == 'POST':
+        # Query to INSERT a new instance of Titles
         query = "INSERT INTO Titles (title_text, publication_year, edition, language, call_number) VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s)"
         request_data = request.json
         query_params = {
@@ -215,6 +222,7 @@ def add_titles():
             'lang': request_data['new_language'],
             'c_num': request_data['new_call_num']
         }
+        # Replace empty strings with NULL
         for key in query_params.keys():
             if query_params[key] == "":
                 query_params[key] = None
@@ -232,6 +240,7 @@ def add_titles():
             # On a failure, preserve the inputs so the Template can fill them back in.
             return jsonify(request_data), 400
     else:
+        # When we reach this page via get, send the form
         return render_template("titles/add_titles.html"), 200
 
 @app.route('/titles/search_titles', methods=['GET'])
@@ -268,10 +277,75 @@ def search_titles():
             abort(400)
         return render_template("titles/search_titles.html", titles=results)
 
-@app.route('/titles/update_title', methods=['GET', 'POST'])
+@app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def update_title():
-    # step 6 - Update
-    return render_template("titles/update_title.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        # step 6 - Update, probably should be js-based like add_titles
+        return render_template("titles/update_title.html")
+    elif request.method =='DELETE':
+        #step 6 - Delete, probably should be js-based like add_titles
+        return render_template("titles/update_title.html")
+    elif request.method == 'POST':
+        # step 5 - insert, probably should be js-based like add_titles
+        # TO-DO for STEP 5
+        return render_template("titles/update_title.html")
+    elif request.args.get('title_id') is None:
+        abort(400)
+    else:
+        # process the GET request
+        # Extract the info for a given title_id to autopopulate the form
+        query = 'SELECT * FROM Titles WHERE title_id = %(t_id)s'
+        query_params = {'t_id': request.args.get('title_id')}
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        title_results = cursor.fetchone()
+        if title_results == None:
+            abort(400)
+
+        # get creators associated with title
+        query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        title_creator_results = cursor.fetchall()
+
+        #get subject associated with title
+        query = 'SELECT ts.subject_catalog_id, t.title_id, s.subject_heading FROM Titles as t NATURAL JOIN Title_Subjects AS ts NATURAL JOIN Subjects AS s WHERE title_id = %(t_id)s'
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        title_subject_results = cursor.fetchall()
+
+        # get all creators
+        query = 'SELECT * FROM Creators'
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query)
+        creator_results = cursor.fetchall()
+        # get all subjects
+        query = 'SELECT * FROM Subjects'
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query)
+        subject_results = cursor.fetchall()
+        return render_template(
+            "titles/update_title.html",
+            title_info=title_results,
+            title_creators=title_creator_results,
+            title_subjects=title_subject_results,
+            creators=creator_results,
+            subjects=subject_results)
 
 @app.route('/items/add_item')
 def add_item():
@@ -333,6 +407,7 @@ def view_title_subjects():
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('400.html'), 400
+
 # Listener
 
 if __name__ == "__main__":
