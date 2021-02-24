@@ -281,19 +281,19 @@ def search_titles():
 def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
-        # step 6 - Update
+        # step 6 - Update, probably should be js-based like add_titles
         return render_template("titles/update_title.html")
     elif request.method =='DELETE':
-        #step 6 - Delete
+        #step 6 - Delete, probably should be js-based like add_titles
         return render_template("titles/update_title.html")
     elif request.method == 'POST':
-        # step 5 - insert
+        # step 5 - insert, probably should be js-based like add_titles
+        # TO-DO for STEP 5
         return render_template("titles/update_title.html")
     elif request.args.get('title_id') is None:
         abort(400)
     else:
         # process the GET request
-
         # Extract the info for a given title_id to autopopulate the form
         query = 'SELECT * FROM Titles WHERE title_id = %(t_id)s'
         query_params = {'t_id': request.args.get('title_id')}

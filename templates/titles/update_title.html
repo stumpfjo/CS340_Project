@@ -96,6 +96,7 @@
             <td>{{creator['first_name']}}</td>
             <td>{{creator['last_name']}}</td>
             <td>
+              <!--needs step 5 implementation, probably javascript-->
               <form method="post" action="{{url_for('update_title')}}">
                 <input type="hidden" name="creator_id" value="{{creator[creator_id]}}">
                 <input type="hidden" name="title_id" value="title_info['title_id']">
@@ -120,6 +121,7 @@
           <tr>
             <td>{{subject['subject_heading']}}</td>
             <td>
+              <!--needs step 5 implementation, probably javascript-->
               <form method="post" action="{{url_for('update_title')}}">
                 <input type="hidden" name="subject_id" value="{{subject_id}}">
                 <input type="hidden" name="title_id" value="{{title_info['title_id']}}">
