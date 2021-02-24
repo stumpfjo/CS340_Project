@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Add Item for *Title*</h1>
+<h1>Add Item for Title</h1>
 
-<form id="weed_item" class="col">
+<form id="add_item_form" method="post" action="{{url_for[add_item]}}">
   <fieldset>
-    <legend>Add Copy of *Title*</legend>
+    <legend>Add Copy of {{title['title_text']}}</legend>
       <label for="add_cutter_num">Cutter Number:</label>
-      <input type="text" id="add_cutter_num" name="cutter_num">
+      <input type="text" id="add_cutter_num" name="add_cutter_num">
     <p>
-      <input type="submit" id="submit_add_item" value="Add Item">
+      <input type="hidden" id="add_title_id" name="add_title_id" value="{{title['title_id']}}">
+      <input type="submit" id="add_item" value="Add Item">
   </fieldset>
 </form>
 
+<script src="{{url_for('static', filename='add_item.js')}}"> </script>
 {% endblock %}

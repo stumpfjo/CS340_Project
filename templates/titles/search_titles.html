@@ -43,8 +43,8 @@
       <th>Title</th>
       <th>Language</th>
       <th>Publication Year</th>
-      <th>On Shelf</th>
       <th>Checked Out</th>
+      <th>On Shelf</th>
     </tr>
   </thead>
   <tbody>
@@ -71,93 +71,6 @@
     </tr>
     {% endfor %}
     {% endif %}
-    <!--
-    <tr>
-      <td>Three Body Problem</td>
-      <td>Mandarin</td>
-      <td>2017</td>
-      <td>
-        <form method="get" action="{{url_for('update_title')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="View/Update Details">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_item')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_item" value="Add Copy to Collection">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>Three Body Problem</td>
-      <td>English</td>
-      <td>2018</td>
-      <td>
-        <form method="get" action="{{url_for('update_title')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="View/Update Details">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_item')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_item" value="Add Copy to Collection">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>Lilith's Brood</td>
-      <td>English</td>
-      <td>1995</td>
-      <td>
-        <form method="get" action="{{url_for('update_title')}}">
-          <input type="hidden" value="2" id="2" name="id">
-          <input type="submit" name="update" value="View/Update Details">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_item')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_item" value="Add Copy to Collection">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>Binti</td>
-      <td>English</td>
-      <td>2018</td>
-      <td>
-        <form method="get" action="{{url_for('update_title')}}">
-          <input type="hidden" value="3" id="3" name="id">
-          <input type="submit" name="update" value="View/Update Details">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_item')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_item" value="Add Copy to Collection">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>The Amber Spyglass</td>
-      <td>English</td>
-      <td>2020</td>
-      <td>
-        <form method="get" action="{{url_for('update_title')}}">
-          <input type="hidden" value="4" id="4" name="id">
-          <input type="submit" name="update" value="View/Update Details">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_item')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_item" value="Add Copy to Collection">
-        </form>
-      </td>
-    </tr>
-    -->
   </tbody>
 </table>
 
