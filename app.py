@@ -277,16 +277,21 @@ def search_titles():
             abort(400)
         return render_template("titles/search_titles.html", titles=results)
 
-@app.route('/titles/update_title', methods=['GET', 'PUT'])
+@app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE'])
 def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
         # step 6 - Update
         return render_template("titles/update_title.html")
+    elif request.method =='DELETE':
+        #step 6 - Delete
+        return render_template("titles/update_title.html")
     elif request.args.get('title_id') is None:
         abort(400)
     else:
         # process the GET request
+
+        # Extract the info for a given title_id to autopopulate the form
         query = 'SELECT * FROM Titles WHERE title_id = %(t_id)s'
         query_params = {'t_id': request.args.get('title_id')}
         try:
@@ -295,10 +300,27 @@ def update_title():
                 query=query, query_params=query_params)
         except:
             abort(400)
-        results = cursor.fetchone()
-        if results == None:
+        title_results = cursor.fetchone()
+        if title_results == None:
             abort(400)
-        return render_template("titles/update_title.html", title_info=results)
+        query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        title_creator_results = cursor.fetchall()
+        query = 'SELECT ts.subject_catalog_id, t.title_id, s.subject_heading FROM Titles as t NATURAL JOIN Title_Subjects AS ts NATURAL JOIN Subjects AS s WHERE title_id = %(t_id)s'
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        title_subject_results = cursor.fetchall()
+
+        return render_template("titles/update_title.html", title_info=title_results, title_creators=title_creator_results, title_subjects=title_subject_results)
 
 @app.route('/items/add_item')
 def add_item():
