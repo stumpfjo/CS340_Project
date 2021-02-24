@@ -142,23 +142,28 @@ def view_borrowers():
 
     if view_type == "filter":
         if request.args.get("searchBy") == "idNum" and request.args.get('idNum') is not None:
+            # SELECT based on borrower_id
             query_params = {'id': request.args.get('idNum')}
             query = query + " WHERE borrower_id = %(id)s"
         elif request.args.get("searchBy") == "lname" and request.args.get('lname') is not None:
+            # Default to exact match
             if request.args.get('lNameMatchType') == "exact":
                 query_params = {'lname': request.args.get('lname')}
                 query = query + " WHERE last_name = %(lname)s"
             else:
+                # Use LIKE to do partial matches on last name
                 search_string = '%' + request.args.get('lname') + '%'
                 query_params = {'lname': search_string}
                 query = query + " WHERE last_name LIKE %(lname)s"
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+            # Grab the results
+        results = cursor.fetchall()
+    except:
+        abort(400)
 
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-
-    # Grab the results
-    results = cursor.fetchall()
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
 @app.route('/borrowers/view_checkouts', methods=['GET'])
