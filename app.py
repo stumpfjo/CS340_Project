@@ -273,10 +273,46 @@ def update_title():
     # step 6 - Update
     return render_template("titles/update_title.html")
 
-@app.route('/items/add_item')
+@app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
     # step 5
-    return render_template("/items/add_item.html")
+    db_connection = get_db()
+    if request.method == 'POST':
+        query = "INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s)"
+        request_data = request.json
+        query_params = {
+            't_id': request_data['add_title_id'],
+            'c_num': request_data['add_cutter_num']
+        }
+        for key in query_params.keys():
+            if query_params[key] == "":
+                query_params[key] = None
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            # Tell the user we succeeded
+            results = {
+                'new_item_id': cursor.lastrowid,
+                'add_title_id': query_params['t_id'],
+                'add_cutter_num': query_params['c_num']
+            }
+            return jsonify(results), 201
+        except:
+            # On a failure, preserve the inputs so the Template can fill them back in.
+            return jsonify(request_data), 400
+    else:
+        query = "SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s"
+        query_params = {'t_id': request.args.get('title_id')}
+        try:
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        titles = cursor.fetchone()
+        return render_template("/items/add_item.html", title=titles), 200
+
 '''
 @app.route('/items')
 def items():
