@@ -277,7 +277,7 @@ def search_titles():
             abort(400)
         return render_template("titles/search_titles.html", titles=results)
 
-@app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
@@ -285,6 +285,9 @@ def update_title():
         return render_template("titles/update_title.html")
     elif request.method =='DELETE':
         #step 6 - Delete
+        return render_template("titles/update_title.html")
+    elif request.method == 'POST':
+        # step 5 - insert
         return render_template("titles/update_title.html")
     elif request.args.get('title_id') is None:
         abort(400)
@@ -303,6 +306,8 @@ def update_title():
         title_results = cursor.fetchone()
         if title_results == None:
             abort(400)
+
+        # get creators associated with title
         query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
         try:
             cursor = db.execute_query(
@@ -311,6 +316,8 @@ def update_title():
         except:
             abort(400)
         title_creator_results = cursor.fetchall()
+
+        #get subject associated with title
         query = 'SELECT ts.subject_catalog_id, t.title_id, s.subject_heading FROM Titles as t NATURAL JOIN Title_Subjects AS ts NATURAL JOIN Subjects AS s WHERE title_id = %(t_id)s'
         try:
             cursor = db.execute_query(
@@ -320,7 +327,25 @@ def update_title():
             abort(400)
         title_subject_results = cursor.fetchall()
 
-        return render_template("titles/update_title.html", title_info=title_results, title_creators=title_creator_results, title_subjects=title_subject_results)
+        # get all creators
+        query = 'SELECT * FROM Creators'
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query)
+        creator_results = cursor.fetchall()
+        # get all subjects
+        query = 'SELECT * FROM Subjects'
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query)
+        subject_results = cursor.fetchall()
+        return render_template(
+            "titles/update_title.html",
+            title_info=title_results,
+            title_creators=title_creator_results,
+            title_subjects=title_subject_results,
+            creators=creator_results,
+            subjects=subject_results)
 
 @app.route('/items/add_item')
 def add_item():
