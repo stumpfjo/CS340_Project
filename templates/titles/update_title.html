@@ -2,24 +2,25 @@
 
 {% block content %}
 <h2>Title Details</h2>
-<form id="updateTitleForm" method="post" action="{{url_for('update_title')}}">
+<form id="updateTitleForm" method="put" action="{{url_for('update_title')}}">
   <fieldset>
     <legend>Title Information</legend>
+    <input type="hidden" id="title_id" name="title_id" value="{{title_info['title_id']}}">
     <p>
       <label for="new_title">Title:</label>
-      <input type="text" id="new_title" name="new_title" value="autofill">
+      <input type="text" id="new_title" name="title_text" value="{{title_info['title_text']}}">
     <p>
       <label for="new_pub_year">Publication Year:</label>
-      <input type="number" id="new_pub_year" name="publication_year" value="1999">
+      <input type="number" id="new_pub_year" name="publication_year" value="{{title_info['publication_year']}}">
     <p>
       <label for="new_edition">Edition:</label>
-      <input type="text" id="new_edition" name="edition" value="autofill">
+      <input type="text" id="new_edition" name="edition" value="{{title_info['edition']}}">
     <p>
       <label for="new_language">Language:</label>
-      <input type="text" id="new_language" name="language" value="autofill">
+      <input type="text" id="new_language" name="language" value="{{title_info['language']}}">
     <p>
       <label for="new_call_num">Call Number:</label>
-      <input type="text" id="new_call_num" name="call_number" value="autofill">
+      <input type="text" id="new_call_num" name="call_number" value="{{title_info['call_number']}}">
     <p>
       <input type="submit" id="update_title" value="Update Title" value="autofill">
   </fieldset>
@@ -36,24 +37,20 @@
         </tr>
       </thead>
       <tbody>
+        {% for creator in title_creators %}
         <tr>
-          <td>FN1</td>
-          <td>LN1</td>
+          <td>{{creator['first_name']}}</td>
+          <td>{{creator['last_name']}}</td>
           <td>
-            <form method="post" action="{{url_for('update_title')}}">
-              <input type="hidden" name="creator_id" value="1">
-              <input type="hidden" name="title_id" value="1">
+            <form method="delete" action="{{url_for('update_title')}}">
+              <input type="hidden" name="creator_catalog_id" value="{{creator['creator_catalog_id']}}">
+              <input type="hidden" name="title_id" value="{{creator['title_id']}}">
               <input type="submit" name="delete_creator" value="Remove Creator">
+            </form>
+          </td>
         </tr>
-        <tr>
-          <td>FN2</td>
-          <td>LN2</td>
-          <td>
-            <form method="post" action="{{url_for('update_title')}}">
-              <input type="hidden" name="creator_id" value="2">
-              <input type="hidden" name="title_id" value="1">
-              <input type="submit" name="delete_creator" value="Remove Creator">
-        </tr>
+        {% endfor %}
+      </tbody>
     </table>
     <table class="col">
       <caption>Subjects</caption>
@@ -63,22 +60,21 @@
         </tr>
       </thead>
       <tbody>
+        {% if subject is not none %}
+        {% for subject in title_subjects %}
         <tr>
-          <td>Science Fiction</td>
+          <td>{{subject['subject_heading']}}</td>
           <td>
-            <form method="post" action="{{url_for('update_title')}}">
-              <input type="hidden" name="subject_id" value="1">
-              <input type="hidden" name="title_id" value="1">
-              <input type="submit" name="remove_subject" value="Remove Subject">
+            <form method="delete" action="{{url_for('update_title')}}">
+              <input type="hidden" name="subject_catalog_id" value="{{subject['subject_catalog_id']}}">
+              <input type="hidden" name="title_id" value="{{subject['title_id']}}">
+              <input type="submit" name="delete_creator" value="Remove Subject">
+            </form>
+          </td>
         </tr>
-        <tr>
-          <td>Fantasy</td>
-          <td>
-            <form method="post" action="{{url_for('update_title')}}">
-              <input type="hidden" name="subject_id" value="2">
-              <input type="hidden" name="title_id" value="1">
-              <input type="submit" name="remove_subject" value="Remove Subject">
-        </tr>
+        {% endfor %}
+        {% endif %}
+      </tbody>
     </table>
   </div>
   <div class="row">
@@ -95,24 +91,18 @@
           </tr>
         </thead>
         <tbody>
+          {% for creator in creators %}
           <tr>
-            <td>FN1</td>
-            <td>LN1</td>
+            <td>{{creator['first_name']}}</td>
+            <td>{{creator['last_name']}}</td>
             <td>
+              <!--needs step 5 implementation, probably javascript-->
               <form method="post" action="{{url_for('update_title')}}">
-                <input type="hidden" name="creator_id" value="1">
-                <input type="hidden" name="title_id" value="1">
-                <input type="submit" name="delete_creator" value="Add Creator">
+                <input type="hidden" name="creator_id" value="{{creator[creator_id]}}">
+                <input type="hidden" name="title_id" value="title_info['title_id']">
+                <input type="submit" name="add_creator" value="Add Creator">
           </tr>
-          <tr>
-            <td>FN2</td>
-            <td>LN2</td>
-            <td>
-              <form method="post" action="{{url_for('update_title')}}">
-                <input type="hidden" name="creator_id" value="2">
-                <input type="hidden" name="title_id" value="1">
-                <input type="submit" name="delete_creator" value="Add Creator">
-          </tr>
+          {% endfor %}
       </table>
     </div>
     <div class="col">
@@ -127,22 +117,17 @@
           </tr>
         </thead>
         <tbody>
+          {% for subject in subjects %}
           <tr>
-            <td>Science Fiction</td>
+            <td>{{subject['subject_heading']}}</td>
             <td>
+              <!--needs step 5 implementation, probably javascript-->
               <form method="post" action="{{url_for('update_title')}}">
-                <input type="hidden" name="subject_id" value="1">
-                <input type="hidden" name="title_id" value="1">
+                <input type="hidden" name="subject_id" value="{{subject_id}}">
+                <input type="hidden" name="title_id" value="{{title_info['title_id']}}">
                 <input type="submit" name="add_subject" value="Add Subject">
           </tr>
-          <tr>
-            <td>Fantasy</td>
-            <td>
-              <form method="post" action="{{url_for('update_title')}}">
-                <input type="hidden" name="subject_id" value="2">
-                <input type="hidden" name="title_id" value="1">
-                <input type="submit" name="add_subject" value="Add Subject">
-          </tr>
+          {% endfor %}
       </table>
     </div>
   </div>

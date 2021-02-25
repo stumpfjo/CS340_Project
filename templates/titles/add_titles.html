@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Titles</h1>
     <h2>Add Titles to System</h2>
-    <form id="newTitleForm">
+    <form id="newTitleForm" method="POST" action="{{url_for('add_titles')}}">
       <fieldset>
         <legend>New Title Information</legend>
         <p>
@@ -11,18 +11,19 @@
           <input type="text" id="new_title" name="new_title">
         <p>
           <label for="new_pub_year">Publication Year:</label>
-          <input type="number" id="new_pub_year" name="publication_year">
+          <input type="number" id="new_pub_year" name="new_pub_year">
         <p>
           <label for="new_edition">Edition:</label>
-          <input type="text" id="new_edition" name="edition">
+          <input type="text" id="new_edition" name="new_edition">
         <p>
           <label for="new_language">Language:</label>
-          <input type="text" id="new_language" name="language">
+          <input type="text" id="new_language" name="new_language">
         <p>
           <label for="new_call_num">Call Number:</label>
-          <input type="text" id="new_call_num" name="call_number">
+          <input type="text" id="new_call_num" name="new_call_num">
         <p>
           <input type="submit" id="add_title" value="Add Title">
       </fieldset>
     </form>
+    <script  src="{{url_for('static', filename='add_title.js')}}"> </script>
 {% endblock %}

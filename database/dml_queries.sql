@@ -140,8 +140,68 @@ VAULES (:titleIdInput, :subjectInput);
 
 -- remove creator/title relationship for a specific title in update/details tab
 DELETE FROM Title_Creators
-WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput
+WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput;
 
 -- remove subject/title relationship for a specific title in update/details tab
 DELETE FROM Title_Subjects
-WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput
+WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput;
+
+-- %(<identifier>)s used as parameter in following:
+
+-- Select queries for searching titles
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text LIKE %(t_text)s;
+
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text LIKE %(t_text)s AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
+
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text LIKE %(t_text)s AND IFNULL(os.on_shelf,0) > 0;
+
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text = %(t_text)s;
+
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text = %(t_text)s AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
+
+SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
+FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
+WHERE title_text = %(t_text)s AND IFNULL(os.on_shelf,0) > 0;
+
+-- Insert query for add_borrowers
+INSERT INTO
+  Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code)
+VALUES
+  (%(fname)s, %(lname)s, %(email)s, %(saddr)s, %(city)s, %(state)s, %(zip)s);
+
+-- Select queries used to implement borrower search
+SELECT * FROM Borrowers;
+SELECT * FROM Borrowers WHERE borrower_id = %(id)s;
+SELECT * FROM Borrowers WHERE last_name = %(lname)s;
+SELECT * FROM Borrowers WHERE last_name LIKE %(lname)s;
+
+-- Select query used to subbort view_checkouts page
+SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date
+FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id
+WHERE b.borrower_id = %(b_id)s;
+
+-- Insert query used to add new titles
+INSERT INTO Titles (title_text, publication_year, edition, language, call_number)
+VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s);
+
+-- Insert query for adding new items
+INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s);
+-- Select query to populate forms on add_items page
+SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s;
+
+-- Queries used to populate fields on page for updating titles
+SELECT * FROM Titles WHERE title_id = %(t_id)s;
+SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s
+SELECT ts.subject_catalog_id, t.title_id, s.subject_heading FROM Titles as t NATURAL JOIN Title_Subjects AS ts NATURAL JOIN Subjects AS s WHERE title_id = %(t_id)s
+SELECT * FROM Creators
+SELECT * FROM Subjects

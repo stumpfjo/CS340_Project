@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>View Checkouts for Borrower *Name*</h2>
+{% if results == () %}
+<h2>No Such Borrower</h2>
+{% else %}
+<h2>View Checkouts for Borrower {{results[0]['first_name']}} {{results[0]['last_name']}}</h2>
+{% if results[0]['item_id'] == None %}
+<h3>No Checkouts</h3>
+{% else %}
 <h3>Results Display</h3>
 <table>
   <thead>
@@ -12,17 +18,22 @@
     </tr>
   </thead>
   <tbody>
+    {% for checkout in results %}
     <tr>
-      <td>Three Body Problem</td>
-      <td>22</td>
-      <td>2021-01-15</td>
+      <td>{{checkout['title_text']}}</td>
+      <td>{{checkout['item_id']}}</td>
+      <td>{{checkout['due_date']}}</td>
       <td>
-        <form method="get" action="{{url_for('return_item')}}">
-          <input type="hidden" value="1" id="1" name="item_id">
-          <input type="hidden" value="1" id="1" name="borrower_id">
-          <input type="submit" name="return" value="Return">
+        <form method="post" action="{{url_for('return_item')}}">
+          <input type="hidden" value="{{checkout['item_id']}}" name="item_id">
+          <input type="hidden" value="{{checkout['borrower_id']}}"  name="borrower_id">
+          <input type="submit" value="Return">
         </form>
+      </td>
     </tr>
+    {% endfor %}
   </tbody>
 </table>
+{% endif %}
+{% endif %}
 {% endblock %}
