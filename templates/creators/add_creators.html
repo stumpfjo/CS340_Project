@@ -2,21 +2,27 @@
 
 {% block content %}
 <h2>Add New Creator</h2>
-<form id="newCreatorForm">
+<form id="newCreatorForm" method="post" action"{{url_for('add_creators')}}>
   <fieldset>
     <legend>New Creator Information</legend>
     <p>
       <label for="newFirstName">First Name:</label>
-      <input type="text" id="newFirstName" name=fname>
+      <input type="text" id="newFirstName" name=fname value="{{creator['fname']}}">
     <p>
       <label for="newLastName">Last Name:</label>
-      <input type="text" id="newLastName" name=lname>
+      <input type="text" id="newLastName" name=lname value="{{creator['lname']}}">
     <p>
       <input type="submit" id="addCreator" value="Add Creator">
   </fieldset>
 </form>
 
-
-
-
+{% if success == "added" %}
+<p>
+  Successfully added Creator {{message['fname']}} {{message['lname']}} with id {{message['id']}}.
+</p>
+{% elif success == "error" %}
+<p>
+  Error adding Creator. 
+</p>
+{% endif %}
 {% endblock %}

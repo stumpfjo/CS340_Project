@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>Add New Subject</h2>
-<form id="newSubjectForm">
+<form id="newSubjectForm" method="post" action"{{url_for('add_subjects')}}>
   <fieldset>
     <legend>New Subject</legend>
     <p>
@@ -11,4 +11,14 @@
       <input type="submit" value = "Add">
   </fieldset>
 </form>
+
+{% if success == "added" %}
+<p>
+  Successfully added Subject {{message['subject']}} with id {{message['id']}}.
+</p>
+{% elif success == "error" %}
+<p>
+  Error adding Subject. 
+</p>
+{% endif %}
 {% endblock %}

@@ -195,11 +195,47 @@ def add_checkouts():
 def subjects():
     return render_template("subjects.html")
 
-@app.route('/subjects/add_subjects.html')
+@app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
-    return render_template("subjects/add_subjects.html")
+    db_connection = get_db()
+    fill_params = {
+        'subject': ""
+    }
 
-@app.route('/subjects/view_subjects')
+    add_success = "none"
+    message_params = None
+    status = 200
+
+    if request.method == 'POST':
+        query = "INSERT INTO Subjects (subject_heading) VALUES (%(subject)s)"
+        query_params = {
+            'subject': request.form.get('subject')
+        }
+
+        try: 
+            cursor = db.execute_query(
+                db_connection=db_connection, 
+                query=query, query_params=query_params
+            )
+            add_success = "added"
+            message_params = {
+                'subject': request.form.get('subject'), 
+                'id': cursor.lastrowid
+            }
+            status = 201
+        except: 
+            status = 400
+            add_success = "error"
+            fill_params = query_params
+        
+    return render_template(
+        "subjects/add_subjects.html", 
+        success=add_success, 
+        subject=fill_params, 
+        message=message_params
+    ), status
+
+@app.route('/subjects/view_subjects', methods=["GET"])
 def view_subjects():
     return render_template("subjects/view_subjects.html")
 '''
@@ -409,13 +445,79 @@ def manage_item():
 def creators():
     return render_template("creators.html")
 
-@app.route('/creators/add_creators')
+@app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
-    return render_template("creators/add_creators.html")
+    db_connection = get_db()
+
+    fill_params = {
+        'fname': "", 
+        'lname': ""
+    }
+
+    add_success = "none"
+    message_params = None
+    status = 200
+
+    if request.method == 'POST':
+        query = "INSERT INTO Creators (first_name, last_name) VALUES (%(fname)s, %(lname)s)"
+        request_data = request.json
+        query_params = {
+            'fname': request.form.get('fname'), 
+            'lname': request.form.get('lname')
+        }
+        for key in query_params.keys():
+            if query_params[key] == "":
+                query_params[key] = None
+    # try: 
+        cursor = db.execute_query(
+            db_connection=db_connection, 
+            query=query, query_params=query_params
+        )
+        add_success = "added"
+        message_params = {
+            'fname': request.form.get('fname'), 
+            'lname': request.form.get('lname'), 
+            'id': cursor.lastrowid
+        }
+        status = 201
+        # except: 
+        #     status = 400
+        #     add_sucess = "error"
+        #     fill_params = query_params
+    
+    return render_template(
+        "creators/add_creators.html", 
+        success=add_success, 
+        creator=fill_params,
+        message = message_params
+    ), status
 
 @app.route('/creators/view_creators')
 def view_creators():
-    return render_template("creators/view_creators.html")
+    db_connection = get_db()
+
+    query = "SELECT * FROM Creators"
+    query_params = None
+
+    if request.args.get('lname') is not None:
+        if request.args.get("lNameMatchType") == 'exact':
+            query_params = {'lname': request.args.get('lname')}
+            query = query + " WHERE last_name = %(lname)s"
+        else:
+            search_string = '%' + request.args.get('lname') + '%'
+            query_params = {'lname': search_string}
+            query = query + " WHERE last_name LIKE %(lname)s"
+    
+    try: 
+        cursor = db.execute_query(
+            db_connection=db_connection, 
+            query=query, query_params=query_params
+        )
+        results = cursor.fetchall()
+    except: 
+        abort(400)
+
+    return render_template("creators/view_creators.html", creators=results)
 '''
 @app.route('/relationships')
 def relationships():
