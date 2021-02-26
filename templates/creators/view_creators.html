@@ -38,7 +38,7 @@
     </tbody>
 </table> -->
 
-<input class="form-control" id="myInput" type="text" placeholder="Search...">
+<!-- <input class="form-control" id="myInput" type="text" placeholder="Search...">
 <br>
 <h2>Results Display</h2>
 <table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
@@ -70,6 +70,37 @@
       <td>J.K.</td>
       <td>Rowling</td>
     </tr>
+  </tbody>
+</table> -->
+
+<form id="search_creators" method="GET" action="{{url_for('view_creators')}}">
+  <fieldset>
+    <legend>Search Creators by last name</legend>
+    <p>
+      <label for="searchLastName">Last Name:</label>
+      <input type="text" id="findLastName" name="lname" value={% if request.args.get('lname') == None %} "" {% else %} "{{request.args.get('lname')}}" {% endif %}>
+      <input type="radio" id="lExact" name="lNameMatchType" value="exact" {% if request.args.get('lNameMatchType') == "exact"  %}checked="checked"{% endif %}>
+      <label for="fExact">Exact Match</label>
+      <input type="radio" id="lPartial" name="lNameMatchType" value="partial" {% if request.args.get('lNameMatchType') == None or request.args.get('lNameMatchType') == "partial"  %}checked="checked"{% endif %}>
+      <label for="lPartial">Partial Match</label>
+    <p>
+      <input type="submit" id="findCreator" value="Find Creator(s)">
+  </fieldset>
+</form>
+
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small">
+  <thead>
+    <tr>
+      <th>First name</th>
+      <th>Last name</th>
+    </tr>
+  </thead>
+  <tbody id="creatorTable">
+    {% for creator in creators %}
+    <tr>
+      <td>{{creator['first_name']}}</td>
+      <td>{{creator['last_name']}}</td>
+    {% endfor %}
   </tbody>
 </table>
 
