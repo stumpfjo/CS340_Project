@@ -26,20 +26,10 @@ def get_db():
 
 # Routes
 
-'''
-@app.route('/index.html')
-def static_index():
-    return render_template("index.html")
-'''
-
 @app.route('/')
 def index():
     return render_template("main.html")
-'''
-@app.route('/books')
-def books():
-    return render_template("books.html")
-'''
+
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
     db_connection = get_db()
@@ -212,37 +202,33 @@ def add_subjects():
             'subject': request.form.get('subject')
         }
 
-        try: 
+        try:
             cursor = db.execute_query(
-                db_connection=db_connection, 
+                db_connection=db_connection,
                 query=query, query_params=query_params
             )
             add_success = "added"
             message_params = {
-                'subject': request.form.get('subject'), 
+                'subject': request.form.get('subject'),
                 'id': cursor.lastrowid
             }
             status = 201
-        except: 
+        except:
             status = 400
             add_success = "error"
             fill_params = query_params
-        
+
     return render_template(
-        "subjects/add_subjects.html", 
-        success=add_success, 
-        subject=fill_params, 
+        "subjects/add_subjects.html",
+        success=add_success,
+        subject=fill_params,
         message=message_params
     ), status
 
 @app.route('/subjects/view_subjects', methods=["GET"])
 def view_subjects():
     return render_template("subjects/view_subjects.html")
-'''
-@app.route('/titles')
-def titles():
-    return render_template("titles.html")
-'''
+
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
     # step 5
@@ -423,24 +409,11 @@ def add_item():
         titles = cursor.fetchone()
         return render_template("/items/add_item.html", title=titles), 200
 
-'''
-@app.route('/items')
-def items():
-    return render_template("items.html")
-
-@app.route('/items/checkout')
-def checkout_item():
-    return render_template("items/checkout.html")
-'''
 @app.route('/items/return_item.html', methods=['POST'])
 def return_item():
     # step 6 - Update
     return render_template("items/return_item.html")
-'''
-@app.route('/items/manage')
-def manage_item():
-    return render_template("items/collection.html")
-'''
+
 @app.route('/creators')
 def creators():
     return render_template("creators.html")
@@ -450,7 +423,7 @@ def add_creators():
     db_connection = get_db()
 
     fill_params = {
-        'fname': "", 
+        'fname': "",
         'lname': ""
     }
 
@@ -462,32 +435,32 @@ def add_creators():
         query = "INSERT INTO Creators (first_name, last_name) VALUES (%(fname)s, %(lname)s)"
         request_data = request.json
         query_params = {
-            'fname': request.form.get('fname'), 
+            'fname': request.form.get('fname'),
             'lname': request.form.get('lname')
         }
         for key in query_params.keys():
             if query_params[key] == "":
                 query_params[key] = None
-    # try: 
+    # try:
         cursor = db.execute_query(
-            db_connection=db_connection, 
+            db_connection=db_connection,
             query=query, query_params=query_params
         )
         add_success = "added"
         message_params = {
-            'fname': request.form.get('fname'), 
-            'lname': request.form.get('lname'), 
+            'fname': request.form.get('fname'),
+            'lname': request.form.get('lname'),
             'id': cursor.lastrowid
         }
         status = 201
-        # except: 
+        # except:
         #     status = 400
         #     add_sucess = "error"
         #     fill_params = query_params
-    
+
     return render_template(
-        "creators/add_creators.html", 
-        success=add_success, 
+        "creators/add_creators.html",
+        success=add_success,
         creator=fill_params,
         message = message_params
     ), status
@@ -507,39 +480,18 @@ def view_creators():
             search_string = '%' + request.args.get('lname') + '%'
             query_params = {'lname': search_string}
             query = query + " WHERE last_name LIKE %(lname)s"
-    
-    try: 
+
+    try:
         cursor = db.execute_query(
-            db_connection=db_connection, 
+            db_connection=db_connection,
             query=query, query_params=query_params
         )
         results = cursor.fetchall()
-    except: 
+    except:
         abort(400)
 
     return render_template("creators/view_creators.html", creators=results)
-'''
-@app.route('/relationships')
-def relationships():
-    return render_template("relationships.html")
 
-@app.route('/relationships/add_title_creators')
-def add_title_creators():
-    return render_template("relationships/add_title_creators.html")
-
-@app.route('/relationships/add_title_subjects')
-def add_title_subjects():
-    return render_template("relationships/add_title_subjects.html")
-
-@app.route('/relationships/view_title_creators')
-def view_title_creators():
-    return render_template("relationships/view_title_creators.html")
-
-
-@app.route('/relationships/view_title_subjects')
-def view_title_subjects():
-    return render_template("relationships/view_title_subjects.html")
-'''
 
 @app.errorhandler(400)
 def page_not_found(e):
