@@ -12,8 +12,7 @@
         <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.</dd>
         <dt><a href="/borrowers/view_borrowers?view=all">View/Modify Borrowers</a></dt>
         <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
-				<dt><a href="/borrowers/view_checkouts">View Checkouts</a></dt>
-        <dd>Page that allows viewing the Items a Borrower has checked out. These items can be checked back in.</dd>
+				
       </dl>
     </dd>
 		<dt>Items</dt>
@@ -24,6 +23,8 @@
         <dd>Page to check out Items to a specific borrower</dd>
 				<dt><a href="{{url_for('add_item')}}">Add Item</a></dt>
         <dd>Page for adding a copy of a specific Title to the library.</dd>
+				<dt><a href="/borrowers/view_checkouts">View Checkouts</a></dt>
+        <dd>Page that allows viewing the Items a Borrower has checked out. These items can be checked back in.</dd>
       </dl>
     </dd>
 		<dt>Titles</dt>
