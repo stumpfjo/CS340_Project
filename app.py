@@ -404,6 +404,11 @@ def add_item():
         titles = cursor.fetchone()
         return render_template("/items/add_item.html", title=titles), 200
 
+@app.route('/items/return_item.html', methods=['POST'])
+def return_item():
+    # step 6 - Update
+    return render_template("items/return_item.html")
+
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
     db_connection = get_db()
