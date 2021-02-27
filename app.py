@@ -109,7 +109,6 @@ def add_borrowers():
         states=states
     ), status
 
-
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
     # step 6 - Delete
@@ -180,10 +179,6 @@ def view_checkouts():
 def add_checkouts():
     #step 6 - Update
     return render_template("items/add_checkouts.html")
-
-@app.route('/subjects')
-def subjects():
-    return render_template("subjects.html")
 
 @app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
@@ -408,15 +403,6 @@ def add_item():
             abort(400)
         titles = cursor.fetchone()
         return render_template("/items/add_item.html", title=titles), 200
-
-@app.route('/items/return_item.html', methods=['POST'])
-def return_item():
-    # step 6 - Update
-    return render_template("items/return_item.html")
-
-@app.route('/creators')
-def creators():
-    return render_template("creators.html")
 
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
