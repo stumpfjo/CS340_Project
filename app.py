@@ -3,9 +3,10 @@
 # Copied from /OR/ Adapted from /OR/ Based on:
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
 
-from flask import Flask, render_template, request, json, jsonify, abort
+from flask import Flask, render_template, request, json, jsonify, abort, make_response
 import database.db_connector as db
 import os
+from datetime import datetime
 
 # db_connection = db.connect_to_database()
 
@@ -155,23 +156,65 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
-@app.route('/items/view_checkouts', methods=['GET'])
+def get_checkouts(borrower_id):
+    db_connection = get_db()
+    # Query to SELECT checkouts for a certain borrower_id
+    query = "SELECT b.borrower_id, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
+    query_params = {'b_id': borrower_id}
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    results = cursor.fetchall()
+    print(results)
+    return results
+
+@app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Items SET borrower_id = NULL, due_date = NULL WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'i_id': request_data['item_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        results = get_checkouts(request_data['borrower_id'])
+        for r in results:
+            if r['due_date']:
+                r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
+    # routing for GET
     results = None
-    # Query to SELECT checkouts for a certain borrower_id
-    query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
-    query_params = {'b_id': request.args.get('id')}
     status = 200
     try:
         # nonsense borrower_ids should generate an empty result
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-        results = cursor.fetchall()
+        results = get_checkouts(request.args.get('id'))
+        for r in results:
+            if r['due_date']:
+                r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
     except:
         # Should not get here
         abort(400)
+
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': request.args.get('id')}
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    current = cursor.fetchone()
 
     # Get a list of all borrowers to populate dropdown
     query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
@@ -180,7 +223,7 @@ def view_checkouts():
         query=query, query_params=query_params)
     borrowers = cursor.fetchall()
 
-    return render_template("items/view_checkouts.html", results=results, current=request.args.get('id'), borrowers=borrowers), status
+    return render_template("items/view_checkouts.html", results=results, current=current, borrowers=borrowers), status
 
 @app.route('/items/add_checkouts')
 def add_checkouts():
@@ -411,10 +454,11 @@ def add_item():
         titles = cursor.fetchone()
         return render_template("/items/add_item.html", title=titles), 200
 
-@app.route('/items/return_item.html', methods=['POST'])
+'''
+@app.route('/items/return_item.html', methods=['PUT'])
 def return_item():
     # step 6 - Update
-    return render_template("items/return_item.html")
+'''
 
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
