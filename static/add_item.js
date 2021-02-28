@@ -1,3 +1,5 @@
+// based on code by Jon Frosch from CS290
+
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('add_item').addEventListener('click', addTitle);
 });
@@ -16,7 +18,7 @@ function addTitle(event) {
   console.log(payload)
 
   var url = document.getElementById('add_item_form').action;
-  //send our form data to the workout log server
+  //send our form data to the server
   req.open('POST', url, true);
   req.setRequestHeader('Content-Type', 'application/json');
   req.addEventListener('load', function(){
