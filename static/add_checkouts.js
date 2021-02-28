@@ -1,16 +1,6 @@
 // on page load, enable buttons
 document.addEventListener('DOMContentLoaded', function(event) {
   enableCheckoutButtons();
-  /*Citation for the following function:
-       Date: 2021-02-06
-       Copied from /OR/ Adapted from /OR/ Based on:
-       Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp */
-  $("#myInput").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#myTable tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
 });
 
 function enableCheckoutButtons() {
@@ -65,12 +55,6 @@ function fillResultTable(results) {
 
   // add listeners to form buttons
   enableCheckoutButtons();
-  $("#myInput").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#myTable tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
 }
 
 function sendCheckoutRequest(event) {

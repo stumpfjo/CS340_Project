@@ -6,7 +6,7 @@
 <p>Filter Item List based on any field:</p>
   <input class="form-control" id="myInput" type="text" placeholder="Search...">
 <br>
-<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
+<table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top">
   <caption>Search Results</caption>
   <thead>
     <tr>
@@ -40,7 +40,14 @@
      Copied from /OR/ Adapted from /OR/ Based on:
      Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
 <script>
-
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
 </script>
 <script>
   var thisPage='{{url_for["add_checkouts"]}}'
