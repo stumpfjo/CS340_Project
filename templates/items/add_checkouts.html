@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Check Out items for borrower *Name*<h2>
+<h2>Check Out items for {{current['first_name']}} {{current['last_name']}}<h2>
 
 <p>Filter Item List based on any field:</p>
   <input class="form-control" id="myInput" type="text" placeholder="Search...">
@@ -12,42 +12,26 @@
     <tr>
       <th>Item Id</th>
       <th>Title</th>
+      <th>Call Number</th>
     </tr>
   </thead>
   <tbody id="myTable">
+    {% if current is not none and available_items %}
+    {% for i in available_items %}
     <tr>
-      <td>1</td>
-      <td>Three Body Problem</td>
+      <td>{{i['item_id']}}</td>
+      <td>{{i['title_text']}}</td>
+      <td>{{i['call_number']}} {{i['cutter_number']}}</td>
       <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="item_id">
-          <input type="hidden" value="1" id="1" name="borrower_id">
-          <input type="submit" name="checkOut" value="Check out">
+        <form class="form_add_checkout">
+          <input type="hidden" name="borrower_id" value="{{current['borrower_id']}}">
+          <input type="hidden" name="item_id" value="{{i['item_id']}}">
+          <input type="submit" id="{{i['item_id']}}_checkout" value="Add Checkout">
         </form>
       </td>
     </tr>
-    <tr>
-      <td>2</td>
-      <td>Lilith's Brood</td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="2" id="1" name="item_id">
-          <input type="hidden" value="1" id="1" name="borrower_id">
-          <input type="submit" name="checkOut" value="Check out">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Bindi</td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="item_id">
-          <input type="hidden" value="1" id="1" name="borrower_id">
-          <input type="submit" name="checkOut" value="Check out">
-        </form>
-      </td>
-    </tr>
+    {% endfor %}
+    {% endif %}
   </tbody>
 </table>
 
@@ -56,14 +40,12 @@
      Copied from /OR/ Adapted from /OR/ Based on:
      Source URL: https://www.w3schools.com/bootstrap/bootstrap_filters.asp -->
 <script>
-$(document).ready(function(){
-  $("#myInput").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#myTable tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-});
-</script>
 
+</script>
+<script>
+  var thisPage='{{url_for["add_checkouts"]}}'
+</script>
+<script src="{{url_for('static', filename='add_checkouts.js')}}">
+  var empty = [];
+</script>
 {% endblock %}

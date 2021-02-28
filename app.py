@@ -238,10 +238,10 @@ def view_checkouts():
 def get_available_items():
     # get a list of items available for checkout
     db_connection = get_db()
-    query = "SELECT i.item_id, t.title_text, i.cutter_number FROM Items AS i NATURAL JOIN Titles as t WHERE i.borrower_id IS NULL"
+    query = "SELECT i.item_id, t.title_text, t.call_number, i.cutter_number FROM Items AS i NATURAL JOIN Titles as t WHERE i.borrower_id IS NULL"
     cursor = db.execute_query(
         db_connection=db_connection,
-        query=query, query_params=query_params)
+        query=query, query_params={})
     return cursor.fetchall()
 
 @app.route('/items/add_checkouts', methods=['GET','PUT'])
@@ -249,18 +249,19 @@ def add_checkouts():
     #step 6 - Update
     db_connection = get_db()
     if request.method == 'PUT':
-        query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date) WHERE items_id = %(i_id)s"
+        query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date)s WHERE item_id = %(i_id)s"
         request_data = request.json
         query_params = {
             'b_id': request_data['borrower_id'],
             'i_id': request_data['item_id'],
-            'd_date': date.today() + timedelta(days=14)
+            'd_date': (date.today() + timedelta(days=14)).strftime('%Y-%m-%d')
         }
         try:
             # run the update
             cursor = db.execute_query(
                 db_connection=db_connection,
                 query=query, query_params=query_params)
+            print('success')
         except:
             # Should not get here
             response = make_response('Bad Request', 400)
@@ -269,7 +270,11 @@ def add_checkouts():
 
         # get a list of items available for checkout
         available_items = get_available_items()
-        response = make_response(jsonify(available_items), 200)
+        data = {
+            'borrower_id': request_data['borrower_id'],
+            'available_items': available_items
+        }
+        response = make_response(jsonify(data), 200)
         response.mimetype = 'application/json'
         return response
 
