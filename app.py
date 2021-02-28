@@ -6,7 +6,7 @@
 from flask import Flask, render_template, request, json, jsonify, abort, make_response
 import database.db_connector as db
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 # db_connection = db.connect_to_database()
 
@@ -168,6 +168,24 @@ def get_checkouts(borrower_id):
     print(results)
     return results
 
+def get_one_borrower(borrower_id):
+    db_connection = get_db()
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': borrower_id}
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    return cursor.fetchone()
+
+def get_all_borrowers():
+    db_connection = get_db()
+    # Get a list of all borrowers to populate dropdown
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params={})
+    return cursor.fetchall()
+
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
@@ -209,26 +227,71 @@ def view_checkouts():
         # Should not get here
         abort(400)
 
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
-    query_params = {'b_id': request.args.get('id')}
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-    current = cursor.fetchone()
+    # get info of current borrower
+    current = get_one_borrower(request.args.get('id'))
 
     # Get a list of all borrowers to populate dropdown
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-    borrowers = cursor.fetchall()
+    borrowers = get_all_borrowers()
 
     return render_template("items/view_checkouts.html", results=results, current=current, borrowers=borrowers), status
 
-@app.route('/items/add_checkouts')
+def get_available_items():
+    # get a list of items available for checkout
+    db_connection = get_db()
+    query = "SELECT i.item_id, t.title_text, t.call_number, i.cutter_number FROM Items AS i NATURAL JOIN Titles as t WHERE i.borrower_id IS NULL"
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params={})
+    return cursor.fetchall()
+
+@app.route('/items/add_checkouts', methods=['GET','PUT'])
 def add_checkouts():
     #step 6 - Update
-    return render_template("items/add_checkouts.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date)s WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'b_id': request_data['borrower_id'],
+            'i_id': request_data['item_id'],
+            'd_date': (date.today() + timedelta(days=14)).strftime('%Y-%m-%d')
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            print('success')
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        # get a list of items available for checkout
+        available_items = get_available_items()
+        data = {
+            'borrower_id': request_data['borrower_id'],
+            'available_items': available_items
+        }
+        response = make_response(jsonify(data), 200)
+        response.mimetype = 'application/json'
+        return response
+
+
+    # routing for GET
+    # get info of current borrower
+    current = get_one_borrower(request.args.get('id'))
+
+    # Get a list of all borrowers to populate dropdown
+    borrowers = get_all_borrowers()
+
+    results = ""
+    if current is not None:
+        # get a list of items available for checkout
+        available_items = get_available_items()
+
+    return render_template("items/add_checkouts.html", current=current, borrowers=borrowers, available_items=available_items)
 
 @app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
