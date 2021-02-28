@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if results is none or results == () %}
+      <h2>No Borrower Selected</h2>
+      {% else %}
+      <h2>Viewing Checkouts for Borrower:</h2>
+      <h3>{{current['first_name']}} {{current['last_name']}}</h3>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Borrower</h2>
+      <form method="GET" action="{{url_for('view_checkouts')}}" id="form_switch_borrower">
+        <fieldset>
+          <legend>Select New Borrower</legend>
+          <p>
+            <select name="id">
+              {% for borrower in borrowers %}
+              <option value="{{borrower['borrower_id']}}" {{"selected" if borrower['borrower_id'] == current['borrower_id']}}>{{borrower['first_name']}} {{borrower['last_name']}}</option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="addBorrower" value="Display Checkouts">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+<h3>Results Display</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Item Id</th>
+      <th>Due Date</th>
+    </tr>
+  </thead>
+  <tbody id="checkout_display_area">
+
+  </tbody>
+</table>
+<!--json parsing from https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript-->
+<script>
+  var itemList = '{{ results|tojson }}';
+  var thisPage = '{{url_for("view_checkouts")}}';
+</script>
+<script src="{{url_for('static', filename='view_checkouts.js')}}">
+  var empty = [];
+</script>
+{% endblock %}
