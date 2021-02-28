@@ -24,11 +24,11 @@ function fillResultTable(results) {
     for (var f of fieldNames) {
       var newCell = document.createElement('td');
       newCell.textContent = i[f];
-      tableBody.appendChild(newCell);
+      newRow.appendChild(newCell);
     }
     var newCell = document.createElement('td');
     newCell.textContent = `${i['call_number']} ${i['cutter_number']}`;
-    tableBody.appendChild(newCell);
+    newRow.appendChild(newCell);
     // add form
     var formCell = document.createElement('td');
     var newForm = document.createElement('form');
