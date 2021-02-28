@@ -183,7 +183,7 @@ def get_all_borrowers():
     query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
     cursor = db.execute_query(
         db_connection=db_connection,
-        query=query, query_params=query_params)
+        query=query, query_params={})
     return cursor.fetchall()
 
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
