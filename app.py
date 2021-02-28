@@ -287,6 +287,7 @@ def add_checkouts():
     borrowers = get_all_borrowers()
 
     results = ""
+    available_items={}
     if current is not None:
         # get a list of items available for checkout
         available_items = get_available_items()
