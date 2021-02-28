@@ -155,7 +155,7 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
-@app.route('/borrowers/view_checkouts', methods=['GET'])
+@app.route('/items/view_checkouts', methods=['GET'])
 def view_checkouts():
     db_connection = get_db()
     results = None
@@ -173,7 +173,14 @@ def view_checkouts():
         # Should not get here
         abort(400)
 
-    return render_template("borrowers/view_checkouts.html", results=results), status
+    # Get a list of all borrowers to populate dropdown
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    borrowers = cursor.fetchall()
+
+    return render_template("items/view_checkouts.html", results=results, current=request.args.get('id'), borrowers=borrowers), status
 
 @app.route('/items/add_checkouts')
 def add_checkouts():

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if results is none or results == () %}
+      <h2>No Borrower Selected</h2>
+      {% else %}
+      <h2>Viewing Checkouts for Borrower {{results[0]['first_name']}} {{results[0]['last_name']}}</h2>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Borrower</h2>
+      <form method="GET" action="{{url_for('view_checkouts')}}" id="form_switch_borrower">
+        <fieldset>
+          <legend>Select New Borrower</legend>
+          <p>
+            <select name="id">
+              {% for borrower in borrowers %}
+              <option value="{{borrower['borrower_id']}}" {{"selected" if borrower['borrower_id']==current_id}}>{{borrower['first_name']}} {{borrower['last_name']}}</option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="addBorrower" value="Display Checkouts">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+<h3>Results Display</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Item Id</th>
+      <th>Due Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if results != () and results[0]['item_id'] is not none %}
+    {% for checkout in results %}
+    <tr>
+      <td>{{checkout['title_text']}}</td>
+      <td>{{checkout['item_id']}}</td>
+      <td>{{checkout['due_date']}}</td>
+      <td>
+        <form method="post" action="{{url_for('return_item')}}">
+          <input type="hidden" value="{{checkout['item_id']}}" name="item_id">
+          <input type="hidden" value="{{checkout['borrower_id']}}"  name="borrower_id">
+          <input type="submit" value="Return">
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}
