@@ -496,27 +496,50 @@ def add_item():
             cursor = db.execute_query(
                 db_connection=db_connection,
                 query=query, query_params=query_params)
-            # Tell the user we succeeded
-            results = {
-                'new_item_id': cursor.lastrowid,
-                'add_title_id': query_params['t_id'],
-                'add_cutter_num': query_params['c_num']
-            }
-            return jsonify(results), 201
         except:
             # On a failure, preserve the inputs so the Template can fill them back in.
             return jsonify(request_data), 400
-    else:
+
+        # Send back the new item info to indicate success
+        query_params = {'i_id': cursor.lastrowid}
+        query = "SELECT i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE i.item_id = %(i_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        return jsonify(results), 201
+
+    else: # method is GET
         query = "SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s"
         query_params = {'t_id': request.args.get('title_id')}
+        # get the current title
         try:
             cursor = db.execute_query(
                 db_connection=db_connection,
                 query=query, query_params=query_params)
         except:
             abort(400)
-        titles = cursor.fetchone()
-        return render_template("/items/add_item.html", title=titles), 200
+        current = cursor.fetchone()
+
+        # get the list of titles
+        query = "SELECT title_text, title_id FROM Titles ORDER BY title_text"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        titles= cursor.fetchall()
+
+        # get the existing copies of this title
+        items = None
+        if current is not None:
+            query = "SELECT i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_id = %(t_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            items = cursor.fetchall()
+
+
+
+        return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
 
 '''
 @app.route('/items/return_item.html', methods=['PUT'])
