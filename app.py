@@ -27,6 +27,26 @@ def get_db():
 
 # Routes
 
+# Used to populate select box in template
+states = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut",
+    "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
+    "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
+    "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
+    "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
+    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
+    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
+    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
+    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
+    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
+    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
+    "WI": "Wisconsin", "WY": "Wyoming"
+}
+
 @app.route('/')
 def index():
     return render_template("main.html")
@@ -44,25 +64,7 @@ def add_borrowers():
         'state': "OR",
         'zip': "",
     }
-    # Used to populate select box in template
-    states = {
-        "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
-        "CA": "California", "CO": "Colorado", "CT": "Connecticut",
-        "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
-        "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
-        "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
-        "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
-        "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-        "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
-        "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
-        "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
-        "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-        "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
-        "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-        "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-        "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
-        "WI": "Wisconsin", "WY": "Wyoming"
-    }
+
     # Default values
     add_success = "none"
     message_params = None
@@ -115,10 +117,25 @@ def delete_borrower():
     # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
 
-@app.route('/borrowers/update_borrowers')
+@app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
     # step 6 - Update
-    return render_template("borrowers/update_borrowers.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        query = ""
+    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': request.args.get('id')}
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+            # Grab the results
+        current = cursor.fetchone()
+    except:
+        abort(400)
+
+    borrowers = get_all_borrowers()
+    return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
