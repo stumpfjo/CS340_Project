@@ -111,11 +111,12 @@ def add_borrowers():
         message=message_params,
         states=states
     ), status
-
+'''
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
     # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
+'''
 
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
