@@ -7,34 +7,35 @@
       {% if current is none %}
       <h2>No Borrower Selected</h2>
       {% else %}
-      <h2>Modify Borrower {{current['first_name']}} {{current['last_name']}}</h2>
+      <h2>Modify Borrower</h2>
+      <h3 id="currentBorrower">{{current['first_name']}} {{current['last_name']}}</h3>
       <form id="updateBorrowerForm">
         <fieldset>
           <legend>Borrower Information</legend>
-            <input type ="hidden" name="id" value="{{current['borrower_id']}}"
+            <input type ="hidden" name="borrower_id" value="{{current['borrower_id']}}"
           <p>
-            <label for="newFirstName">First Name:</label>
-            <input type="text" id="newFirstName" name="fname" value="{{current['first_name']}}">
+            <label for="last_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" value="{{current['first_name']}}">
           <p>
-            <label for="newLastName">Last Name:</label>
-            <input type="text" id="newLastName" name="lname" value="{{current['last_name']}}">
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" value="{{current['last_name']}}">
           <p>
-            <label for="newEmailAddr">Email address:</label>
-            <input type="email" id="newEmailAddr" name="emailAddr" value="current['email']">
+            <label for="email">Email address:</label>
+            <input type="email" id="email" name="email" value="{{current['email']}}">
           <p>
-            <label for="newStreetAddr">Street address:</label>
-            <input type="text" id="newStreetAddr" name="streetAddr" value="{{current['street_address']}}">
+            <label for="street_address">Street address:</label>
+            <input type="text" id="street_address" name="street_address" value="{{current['street_address']}}">
           <p>
-            <label for="newCityName">City:</label>
-            <input type="text" id="newCityName" name="cityName" value="{{current['city_name']}}">
-            <label for="newState">State:</label>
-            <select id="newState" name="stateAbbrev">
+            <label for="city_name">City:</label>
+            <input type="text" id="city_name" name="city_name" value="{{current['city_name']}}">
+            <label for="state">State:</label>
+            <select id="state" name="state">
               {% for state in states %}
               <option value="{{state}}" {{"selected" if current['state']==state}}>{{states[state]}}</option>
               {% endfor %}
             </select>
-            <label for="newZipCode">Zip Code:</label>
-            <input type="text" placeholder="Zip Code" id="newZipCode" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" name="zipCode" value="{{current['zip_code']}}">
+            <label for="zip_code">Zip Code:</label>
+            <input type="text" id="zip_code" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" name="zip_code" value="{{current['zip_code']}}">
           <p>
             <input type="submit" id="updateBorrower" value="Update">
         </fieldset>
@@ -49,7 +50,7 @@
           <p>
             <select name="id">
               {% for borrower in borrowers %}
-              <option value="{{borrower['borrower_id']}}" {{"selected" if borrower['borrower_id'] == current['borrower_id']}}>{{borrower['first_name']}} {{borrower['last_name']}}</option>
+              <option id="optionBorrower{{borrower['borrower_id']}}" value="{{borrower['borrower_id']}}" {{"selected" if borrower['borrower_id'] == current['borrower_id']}}>{{borrower['first_name']}} {{borrower['last_name']}}</option>
               {% endfor %}
             </select>
           <p>
@@ -59,4 +60,10 @@
     </div>
   </div>
 </div>
+<script>
+  var thisPage='{{url_for["update_borrowers"]}}'
+</script>
+<script src="{{url_for('static', filename='update_borrowers.js')}}">
+  var empty = [];
+</script>
 {% endblock %}
