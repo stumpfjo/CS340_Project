@@ -465,12 +465,15 @@ def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
         # step 6 - Update, probably should be js-based like add_titles
+        # use this for editing Title info
         return render_template("titles/update_title.html")
     elif request.method =='DELETE':
         #step 6 - Delete, probably should be js-based like add_titles
+        # use this for removing items from title_subjects/title_creators
         return render_template("titles/update_title.html")
     elif request.method == 'POST':
         # step 5 - insert, probably should be js-based like add_titles
+        # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
     elif request.args.get('title_id') is None:
