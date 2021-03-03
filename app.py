@@ -27,6 +27,26 @@ def get_db():
 
 # Routes
 
+# Used to populate select box in template
+states = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut",
+    "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
+    "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
+    "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
+    "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
+    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
+    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
+    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
+    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
+    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
+    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
+    "WI": "Wisconsin", "WY": "Wyoming"
+}
+
 @app.route('/')
 def index():
     return render_template("main.html")
@@ -44,25 +64,7 @@ def add_borrowers():
         'state': "OR",
         'zip': "",
     }
-    # Used to populate select box in template
-    states = {
-        "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
-        "CA": "California", "CO": "Colorado", "CT": "Connecticut",
-        "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
-        "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
-        "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
-        "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
-        "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-        "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
-        "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
-        "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
-        "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-        "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
-        "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-        "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-        "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
-        "WI": "Wisconsin", "WY": "Wyoming"
-    }
+
     # Default values
     add_success = "none"
     message_params = None
@@ -78,7 +80,7 @@ def add_borrowers():
             'saddr': request.form.get('streetAddr'),
             'city': request.form.get('cityName'),
             'state': request.form.get('stateAbbrev'),
-            'zip': request.form.get('zipCode'),
+            'zip': request.form.get('zipCode')
         }
         for key in query_params.keys():
             if query_params[key] == "":
@@ -115,10 +117,60 @@ def delete_borrower():
     # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
 
-@app.route('/borrowers/update_borrowers')
+@app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
     # step 6 - Update
-    return render_template("borrowers/update_borrowers.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Borrowers SET first_name = %(f_name)s, last_name = %(l_name)s, email = %(email)s, street_address = %(saddr)s, city_name = %(city)s, state = %(state)s, zip_code = %(zip)s WHERE borrower_id = %(b_id)s"
+        request_data = request.json
+        query_params = {
+            'f_name': request_data['first_name'],
+            'l_name': request_data['last_name'],
+            'email': request_data['email'],
+            'saddr': request_data['street_address'],
+            'city': request_data['city_name'],
+            'state': request_data['state'],
+            'zip': request_data['zip_code'],
+            'b_id': request_data['borrower_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        print(results)
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
+    # Retrieve info for the selected borrower
+    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': request.args.get('id')}
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+            # Grab the results
+        current = cursor.fetchone()
+    except:
+        abort(400)
+
+    # populate a dropdown to select a different borrower
+    borrowers = get_all_borrowers()
+    return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
