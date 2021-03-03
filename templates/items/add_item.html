@@ -1,18 +1,82 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Add Item for Title</h1>
-
+<h1>Add Items to Collection</h1>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if current is none %}
+      <h2>No Title Selected</h2>
+      {% else %}
+      <h2>Add Copy of:</h2>
+      <h3>{{current['title_text']}}</h3>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Borrower</h2>
+      <form method="GET" action="{{url_for('add_item')}}" id="form_switch_title">
+        <fieldset>
+          <legend>Select New Title</legend>
+          <p>
+            <select name="title_id" id="title_id">
+              {% for title in titles %}
+              <option value="{{title['title_id']}}" {{"selected" if title['title_id'] == current['title_id']}}>
+                {{title['title_text']}}
+              </option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="switchTitle" value="Switch Title">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+{% if current is not none %}
+<h1>New Copy Info:</h1>
 <form id="add_item_form" method="post" action="{{url_for[add_item]}}">
   <fieldset>
-    <legend>Add Copy of {{title['title_text']}}</legend>
+    <legend>Add Copy of {{current['title_text']}}</legend>
       <label for="add_cutter_num">Cutter Number:</label>
       <input type="text" id="add_cutter_num" name="add_cutter_num">
     <p>
-      <input type="hidden" id="add_title_id" name="add_title_id" value="{{title['title_id']}}">
+      <input type="hidden" id="add_title_id" name="add_title_id" value="{{current['title_id']}}">
       <input type="submit" id="add_item" value="Add Item">
   </fieldset>
 </form>
-
-<script src="{{url_for('static', filename='add_item.js')}}"> </script>
+<h1>Current Copies Info:</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Call Number</th>
+      <th>Cutter Number</th>
+    </tr>
+  </thead>
+  <tbody id="currentItems">
+  {% for item in items %}
+  <tr>
+    <td>{{item['title_text']}}</td>
+    <td>{{item['call_number']}}</td>
+    <td>{{item['cutter_number']}}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+<!-- Citation for selectmenu:
+Date 2021-02-28
+Copied from
+Source URL: https://jqueryui.com/selectmenu/-->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+  var empty = [];
+</script>
+<script>
+  $( function() {
+    $( "#title_id" ).selectmenu();
+  } );
+</script>
+<script src="{{url_for('static', filename='add_item.js')}}">
+  var empty =[];
+</script>
 {% endblock %}
