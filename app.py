@@ -111,12 +111,12 @@ def add_borrowers():
         message=message_params,
         states=states
     ), status
-'''
+
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
     # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
-'''
+
 
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
@@ -346,6 +346,49 @@ def add_checkouts():
         available_items = get_available_items()
 
     return render_template("items/add_checkouts.html", current=current, borrowers=borrowers, available_items=available_items)
+
+@app.route('/items/weed_items', methods=['GET','DELETE'])
+def weed_items():
+    # step 6 - Delete
+    db_connection = get_db()
+    if request.method == 'DELETE':
+        query = ""
+
+    # route for 'GET'
+    results = [];
+    search = {
+        'title_text': '',
+        'last_name': '',
+        'subject_heading': ''
+    };
+    if request.args.get('search'):
+        if request.args.get('searchBy') == 'title':
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s"
+            search_string = '%' + request.args.get('title_text') + '%'
+            query_params = {'t_text': search_string}
+            search['title_text'] = request.args.get('title_text')
+        elif request.args.get('searchBy') == 'creator':
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s"
+            search_string = '%' + request.args.get('last_name') + '%'
+            query_params = {'l_name': search_string}
+            search['last_name'] = request.args.get('last_name')
+        elif request.args.get('searchBy') == 'subject':
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s"
+            search_string = '%' + request.args.get('subject_heading') + '%'
+            query_params = {'s_head': search_string}
+            search['subject_heading'] = request.args.get('subject_heading')
+        else:
+            abort(400)
+        try:
+            # run the search
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        results = cursor.fetchall()
+
+    return render_template("items/weed_items.html", results=results, search=search)
 
 @app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
