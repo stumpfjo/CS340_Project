@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   enableWeedButtons();
 });
 
+// remove the row of the item that got deleted from the display
 function removeRow(reply) {
   if (reply && reply['i_id']) {
     rowId = "row_" + reply['i_id'];
@@ -10,6 +11,7 @@ function removeRow(reply) {
   }
 }
 
+// send a DELETE request to the server for a given item
 function processDelete(event) {
   event.preventDefault();
   payload = {};
@@ -37,6 +39,7 @@ function processDelete(event) {
 //     Copied from /OR/ Adapted from /OR/ Based on:
 //     Source URL: https://css-tricks.com/a-bunch-of-options-for-looping-over-queryselectorall-nodelists/
 function enableWeedButtons() {
+  // attach an event listener to each Weed button
   document.querySelectorAll('.deleteButton').forEach((button) => {
     button.addEventListener('click', processDelete);
   });
