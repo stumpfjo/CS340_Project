@@ -352,7 +352,24 @@ def weed_items():
     # step 6 - Delete
     db_connection = get_db()
     if request.method == 'DELETE':
-        query = ""
+        query = "DELETE FROM Items WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'i_id': request_data['item_id']
+        }
+        try:
+            # attempt the delete
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            return jsonify(query_params), 200
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+
 
     # route for 'GET'
     results = [];

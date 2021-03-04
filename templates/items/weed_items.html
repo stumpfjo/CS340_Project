@@ -31,7 +31,7 @@
   </thead>
   <tbody id="myTable">
     {% for r in results %}
-    <tr id="{{r['item_id']}}">
+    <tr id="row_{{r['item_id']}}">
       <td>{{r['item_id']}}</td>
       <td>{{r['call_number']}} {{r['cutter_number']}}</td>
       <td>{{r['title_text']}}</td>
@@ -46,6 +46,8 @@
   </tbody>
 </table>
 
-
+<script src="{{url_for('static', filename='weed_items.js')}}">
+  var empty = [];
+</script>
 
 {% endblock %}
