@@ -1,7 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Title Details</h2>
+<h2>Update Title Details:</h2>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if title_info is none %}
+      <h3>No Title Selected</h3>
+      {% else %}
+      <h3>Updating Title:</h3>
+      <h4 id="currentTitle">{{title_info['title_text']}}</h4>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Title</h2>
+      <form method="GET" action="{{url_for('update_title')}}" id="form_switch_title">
+        <fieldset>
+          <legend>Select New Title</legend>
+          <p>
+            <select name="title_id" id="title_id">
+              {% for title in titles %}
+              <option value="{{title['title_id']}}" {{"selected" if title['title_id'] == title_info['title_id']}}>
+                {{title['title_text']}}
+              </option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="switchTitle" value="Switch Title">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
 <form id="updateTitleForm" method="put" action="{{url_for('update_title')}}">
   <fieldset>
     <legend>Title Information</legend>
@@ -153,5 +183,17 @@ $(document).ready(function(){
     });
   });
 });
+</script>
+<!-- Citation for selectmenu:
+Date 2021-02-28
+Copied from
+Source URL: https://jqueryui.com/selectmenu/-->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+  var empty = [];
+</script>
+<script>
+  $( function() {
+    $( "#title_id" ).selectmenu();
+  } );
 </script>
 {% endblock %}

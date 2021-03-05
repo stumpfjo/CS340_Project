@@ -591,13 +591,21 @@ def update_title():
             db_connection=db_connection,
             query=query)
         subject_results = cursor.fetchall()
+
+        # get the list of titles
+        query = "SELECT title_text, title_id FROM Titles ORDER BY title_text"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        titles= cursor.fetchall()
+
         return render_template(
             "titles/update_title.html",
             title_info=title_results,
             title_creators=title_creator_results,
             title_subjects=title_subject_results,
             creators=creator_results,
-            subjects=subject_results)
+            subjects=subject_results, titles=titles)
 
 @app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
