@@ -531,8 +531,38 @@ def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
         # step 6 - Update, probably should be js-based like add_titles
-        # use this for editing Title info
-        return render_template("titles/update_title.html")
+        query = "UPDATE Titles SET title_text = %(t_text)s, publication_year = %(p_year)s, edition = %(edition)s, language = %(lang)s, call_number = %(c_num)s WHERE title_id = %(t_id)s"
+        request_data = request.json
+        query_params = {
+            't_text': request_data['title_text'],
+            'p_year': request_data['publication_year'],
+            'edition': request_data['edition'],
+            'lang': request_data['language'],
+            'c_num': request_data['call_number'],
+            't_id': request_data['title_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        query = "SELECT * FROM Titles WHERE title_id = %(t_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        print(results)
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
     elif request.method =='DELETE':
         #step 6 - Delete, probably should be js-based like add_titles
         # use this for removing items from title_subjects/title_creators

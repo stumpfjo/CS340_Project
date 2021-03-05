@@ -20,7 +20,7 @@
           <p>
             <select name="title_id" id="select_title_id">
               {% for title in titles %}
-              <option value="{{title['title_id']}}" {{"selected" if title['title_id'] == title_info['title_id']}}>
+              <option value="{{title['title_id']}}" id="optionTitle{{title['title_id']}}" {{"selected" if title['title_id'] == title_info['title_id']}}>
                 {{title['title_text']}}
               </option>
               {% endfor %}
@@ -33,7 +33,7 @@
   </div>
 </div>
 {% if title_info is not none %}
-<form id="updateTitleForm" method="put" action="{{url_for('update_title')}}">
+<form id="updateTitleForm" action="{{url_for('update_title')}}">
   <fieldset>
     <legend>Title Information</legend>
     <input type="hidden" id="title_id" name="title_id" value="{{title_info['title_id']}}">
@@ -53,7 +53,7 @@
       <label for="new_call_num">Call Number:</label>
       <input type="text" id="new_call_num" name="call_number" value="{{title_info['call_number']}}">
     <p>
-      <input type="submit" id="update_title" value="Update Title" value="autofill">
+      <input type="submit" id="updateTitle" value="Update Title">
   </fieldset>
 </form>
 
@@ -200,5 +200,8 @@ Source URL: https://jqueryui.com/selectmenu/-->
   $( function() {
     $( "#select_title_id" ).selectmenu();
   } );
+</script>
+<script src="{{url_for('static', filename='update_titles.js')}}">
+  var empty = [];
 </script>
 {% endblock %}
