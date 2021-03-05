@@ -65,7 +65,7 @@
       <td>
         <form method="get" action="{{url_for('update_borrowers')}}">
           <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
-          <input type="submit" name="update" value="Update">
+          <input type="submit" value="Update">
         </form>
       </td>
       <td>
@@ -77,151 +77,17 @@
       <td>
         <form method="get" action="{{url_for('add_checkouts')}}">
           <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
-          <input type="submit" name="add_checkouts" value="Add Checkouts">
+          <input type="submit" value="Add Checkouts">
         </form>
       </td>
-      <td>
+      <!--<td>
         <form method="get" action="{{url_for('delete_borrower')}}">
           <input type="hidden" value="{{borrower['borrower_id']}}" id="{{borrower['borrower_id']}}" name="id">
           <input type="submit" name="delete" value="Delete">
         </form>
-      </td>
+      </td>-->
     </tr>
     {% endfor %}
-    <!--
-    <tr>
-      <td>John</td>
-      <td>Doe</td>
-      <td>john@example.com</td>
-      <td>123 Anystreet</td>
-      <td>Sometown</td>
-      <td>OR</td>
-      <td>98765</td>
-      <td>
-        <form method="get" action="{{url_for('update_borrowers')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="Update">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('view_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="view_checkouts" value="View Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_checkouts" value="Add Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('delete_borrower')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="delete" value="Delete">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>Mary</td>
-      <td>Moe</td>
-      <td>mary@mail.com</td>
-      <td>567 Anystreet</td>
-      <td>Sometown</td>
-      <td>OR</td>
-      <td>98765</td>
-      <td>
-        <form method="get" action="{{url_for('update_borrowers')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="Update">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('view_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="checkouts" value="View Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_checkouts" value="Add Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('delete_borrower')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="delete" value="Delete">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>July</td>
-      <td>Dooley</td>
-      <td>july@greatstuff.com</td>
-      <td>123 Avenue A</td>
-      <td>Sometown</td>
-      <td>OR</td>
-      <td>98765</td>
-      <td>
-        <form method="get" action="{{url_for('update_borrowers')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="Update">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('view_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="checkouts" value="View Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_checkouts" value="Add Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('delete_borrower')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="delete" value="Delete">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>Anja</td>
-      <td>Ravendale</td>
-      <td>a_r@test.com</td>
-      <td>123 South Dr.</td>
-      <td>Sometown</td>
-      <td>OR</td>
-      <td>98765</td>
-      <td>
-        <form method="get" action="{{url_for('update_borrowers')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="update" value="Update">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('view_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="checkouts" value="View Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('add_checkouts')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="add_checkouts" value="Add Checkouts">
-        </form>
-      </td>
-      <td>
-        <form method="get" action="{{url_for('delete_borrower')}}">
-          <input type="hidden" value="1" id="1" name="id">
-          <input type="submit" name="delete" value="Delete">
-        </form>
-      </td>
-    </tr>
-    -->
   </tbody>
 </table>
 
