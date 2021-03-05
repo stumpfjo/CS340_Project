@@ -18,7 +18,7 @@
         <fieldset>
           <legend>Select New Title</legend>
           <p>
-            <select name="title_id" id="title_id">
+            <select name="title_id" id="select_title_id">
               {% for title in titles %}
               <option value="{{title['title_id']}}" {{"selected" if title['title_id'] == title_info['title_id']}}>
                 {{title['title_text']}}
@@ -32,6 +32,7 @@
     </div>
   </div>
 </div>
+{% if title_info is not none %}
 <form id="updateTitleForm" method="put" action="{{url_for('update_title')}}">
   <fieldset>
     <legend>Title Information</legend>
@@ -184,16 +185,20 @@ $(document).ready(function(){
   });
 });
 </script>
+{% endif %}
 <!-- Citation for selectmenu:
 Date 2021-02-28
 Copied from
 Source URL: https://jqueryui.com/selectmenu/-->
+<script src="https://code.jquery.com/jquery-1.12.4.js">
+  var empty1 = [];
+</script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
   var empty = [];
 </script>
 <script>
   $( function() {
-    $( "#title_id" ).selectmenu();
+    $( "#select_title_id" ).selectmenu();
   } );
 </script>
 {% endblock %}

@@ -542,8 +542,8 @@ def update_title():
         # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
-    elif request.args.get('title_id') is None:
-        abort(400)
+    # elif request.args.get('title_id') is None:
+    #     abort(400)
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
@@ -556,8 +556,8 @@ def update_title():
         except:
             abort(400)
         title_results = cursor.fetchone()
-        if title_results == None:
-            abort(400)
+        # if title_results == None:
+        #     abort(400)
 
         # get creators associated with title
         query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
