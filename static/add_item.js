@@ -1,3 +1,5 @@
+// based on code by Jon Frosch from CS290
+
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('add_item').addEventListener('click', addTitle);
 });
@@ -16,16 +18,23 @@ function addTitle(event) {
   console.log(payload)
 
   var url = document.getElementById('add_item_form').action;
-  //send our form data to the workout log server
+  //send our form data to the server
   req.open('POST', url, true);
   req.setRequestHeader('Content-Type', 'application/json');
   req.addEventListener('load', function(){
     if(req.status == 201 && req.status < 400){
       res = JSON.parse(req.responseText);
-      alert('Added Item id: ' + res['new_item_id'] + ' with cutter ' + res['add_cutter_num']);
-      for (var f of fields) {
-        formData[f].value = res[f];
+      alert('Added Item!');
+      // add the new item to the results list
+      var itemBody = document.getElementById('currentItems');
+      var newRow = document.createElement('tr');
+      var tableFields = ['title_text','call_number','cutter_number'];
+      for (var f of tableFields) {
+        var newCell = document.createElement('td');
+        newCell.textContent = res[f];
+        newRow.appendChild(newCell)
       }
+      itemBody.appendChild(newRow);
     } else if(req.status == 400){
       res = JSON.parse(req.responseText);
       for (var f of fields) {

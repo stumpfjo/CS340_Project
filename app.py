@@ -3,9 +3,10 @@
 # Copied from /OR/ Adapted from /OR/ Based on:
 # Source URL: https://github.com/gkochera/CS340-demo-flask-app
 
-from flask import Flask, render_template, request, json, jsonify, abort
+from flask import Flask, render_template, request, json, jsonify, abort, make_response
 import database.db_connector as db
 import os
+from datetime import datetime, timedelta, date
 
 # db_connection = db.connect_to_database()
 
@@ -26,20 +27,30 @@ def get_db():
 
 # Routes
 
-'''
-@app.route('/index.html')
-def static_index():
-    return render_template("index.html")
-'''
+# Used to populate select box in template
+states = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut",
+    "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
+    "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
+    "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
+    "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
+    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
+    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
+    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
+    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
+    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
+    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
+    "WI": "Wisconsin", "WY": "Wyoming"
+}
 
 @app.route('/')
 def index():
     return render_template("main.html")
-'''
-@app.route('/books')
-def books():
-    return render_template("books.html")
-'''
+
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
     db_connection = get_db()
@@ -53,25 +64,7 @@ def add_borrowers():
         'state': "OR",
         'zip': "",
     }
-    # Used to populate select box in template
-    states = {
-        "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
-        "CA": "California", "CO": "Colorado", "CT": "Connecticut",
-        "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
-        "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
-        "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
-        "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
-        "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-        "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
-        "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
-        "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
-        "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-        "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
-        "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-        "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-        "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
-        "WI": "Wisconsin", "WY": "Wyoming"
-    }
+
     # Default values
     add_success = "none"
     message_params = None
@@ -87,7 +80,7 @@ def add_borrowers():
             'saddr': request.form.get('streetAddr'),
             'city': request.form.get('cityName'),
             'state': request.form.get('stateAbbrev'),
-            'zip': request.form.get('zipCode'),
+            'zip': request.form.get('zipCode')
         }
         for key in query_params.keys():
             if query_params[key] == "":
@@ -119,16 +112,66 @@ def add_borrowers():
         states=states
     ), status
 
-
 @app.route('/borrowers/delete_borrower')
 def delete_borrower():
     # step 6 - Delete
     return render_template("borrowers/delete_borrower.html")
 
-@app.route('/borrowers/update_borrowers')
+
+@app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
     # step 6 - Update
-    return render_template("borrowers/update_borrowers.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Borrowers SET first_name = %(f_name)s, last_name = %(l_name)s, email = %(email)s, street_address = %(saddr)s, city_name = %(city)s, state = %(state)s, zip_code = %(zip)s WHERE borrower_id = %(b_id)s"
+        request_data = request.json
+        query_params = {
+            'f_name': request_data['first_name'],
+            'l_name': request_data['last_name'],
+            'email': request_data['email'],
+            'saddr': request_data['street_address'],
+            'city': request_data['city_name'],
+            'state': request_data['state'],
+            'zip': request_data['zip_code'],
+            'b_id': request_data['borrower_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        print(results)
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
+    # Retrieve info for the selected borrower
+    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': request.args.get('id')}
+    try:
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+            # Grab the results
+        current = cursor.fetchone()
+    except:
+        abort(400)
+
+    # populate a dropdown to select a different borrower
+    borrowers = get_all_borrowers()
+    return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
@@ -166,34 +209,208 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
-@app.route('/borrowers/view_checkouts', methods=['GET'])
+def get_checkouts(borrower_id):
+    db_connection = get_db()
+    # Query to SELECT checkouts for a certain borrower_id
+    query = "SELECT b.borrower_id, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
+    query_params = {'b_id': borrower_id}
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    results = cursor.fetchall()
+    print(results)
+    return results
+
+def get_one_borrower(borrower_id):
+    db_connection = get_db()
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query_params = {'b_id': borrower_id}
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params=query_params)
+    return cursor.fetchone()
+
+def get_all_borrowers():
+    db_connection = get_db()
+    # Get a list of all borrowers to populate dropdown
+    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params={})
+    return cursor.fetchall()
+
+@app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Items SET borrower_id = NULL, due_date = NULL WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'i_id': request_data['item_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        results = get_checkouts(request_data['borrower_id'])
+        for r in results:
+            if r['due_date']:
+                r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
+    # routing for GET
     results = None
-    # Query to SELECT checkouts for a certain borrower_id
-    query = "SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
-    query_params = {'b_id': request.args.get('id')}
     status = 200
     try:
         # nonsense borrower_ids should generate an empty result
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-        results = cursor.fetchall()
+        results = get_checkouts(request.args.get('id'))
+        for r in results:
+            if r['due_date']:
+                r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
     except:
         # Should not get here
         abort(400)
 
-    return render_template("borrowers/view_checkouts.html", results=results), status
+    # get info of current borrower
+    current = get_one_borrower(request.args.get('id'))
 
-@app.route('/items/add_checkouts')
+    # Get a list of all borrowers to populate dropdown
+    borrowers = get_all_borrowers()
+
+    return render_template("items/view_checkouts.html", results=results, current=current, borrowers=borrowers), status
+
+def get_available_items():
+    # get a list of items available for checkout
+    db_connection = get_db()
+    query = "SELECT i.item_id, t.title_text, t.call_number, i.cutter_number FROM Items AS i NATURAL JOIN Titles as t WHERE i.borrower_id IS NULL"
+    cursor = db.execute_query(
+        db_connection=db_connection,
+        query=query, query_params={})
+    return cursor.fetchall()
+
+@app.route('/items/add_checkouts', methods=['GET','PUT'])
 def add_checkouts():
     #step 6 - Update
-    return render_template("items/add_checkouts.html")
+    db_connection = get_db()
+    if request.method == 'PUT':
+        query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date)s WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'b_id': request_data['borrower_id'],
+            'i_id': request_data['item_id'],
+            'd_date': (date.today() + timedelta(days=14)).strftime('%Y-%m-%d')
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            print('success')
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
 
-@app.route('/subjects')
-def subjects():
-    return render_template("subjects.html")
+        # get a list of items available for checkout
+        available_items = get_available_items()
+        data = {
+            'borrower_id': request_data['borrower_id'],
+            'available_items': available_items
+        }
+        response = make_response(jsonify(data), 200)
+        response.mimetype = 'application/json'
+        return response
+
+
+    # routing for GET
+    # get info of current borrower
+    current = get_one_borrower(request.args.get('id'))
+
+    # Get a list of all borrowers to populate dropdown
+    borrowers = get_all_borrowers()
+
+    results = ""
+    available_items={}
+    if current is not None:
+        # get a list of items available for checkout
+        available_items = get_available_items()
+
+    return render_template("items/add_checkouts.html", current=current, borrowers=borrowers, available_items=available_items)
+
+@app.route('/items/weed_items', methods=['GET','DELETE'])
+def weed_items():
+    # step 6 - Delete
+    db_connection = get_db()
+    if request.method == 'DELETE':
+        # Deletion query
+        query = "DELETE FROM Items WHERE item_id = %(i_id)s"
+        request_data = request.json
+        query_params = {
+            'i_id': request_data['item_id']
+        }
+        try:
+            # attempt the delete
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            # Send back the item that got deleted
+            return jsonify(query_params), 200
+        except:
+            # Should not get here
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+
+
+    # route for 'GET'
+    results = [];
+    search = {
+        'title_text': '',
+        'last_name': '',
+        'subject_heading': ''
+    };
+    if request.args.get('search'):
+        if request.args.get('searchBy') == 'title':
+            # LIKE match on title_text
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s"
+            search_string = '%' + request.args.get('title_text') + '%'
+            query_params = {'t_text': search_string}
+            search['title_text'] = request.args.get('title_text')
+        elif request.args.get('searchBy') == 'creator':
+            # LIKE match ofn creator last_name
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s"
+            search_string = '%' + request.args.get('last_name') + '%'
+            query_params = {'l_name': search_string}
+            search['last_name'] = request.args.get('last_name')
+        elif request.args.get('searchBy') == 'subject':
+            # LIKE match on subject_heading
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s"
+            search_string = '%' + request.args.get('subject_heading') + '%'
+            query_params = {'s_head': search_string}
+            search['subject_heading'] = request.args.get('subject_heading')
+        else:
+            abort(400)
+        try:
+            # run the search
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            abort(400)
+        results = cursor.fetchall()
+
+    return render_template("items/weed_items.html", results=results, search=search)
 
 @app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
@@ -212,37 +429,33 @@ def add_subjects():
             'subject': request.form.get('subject')
         }
 
-        try: 
+        try:
             cursor = db.execute_query(
-                db_connection=db_connection, 
+                db_connection=db_connection,
                 query=query, query_params=query_params
             )
             add_success = "added"
             message_params = {
-                'subject': request.form.get('subject'), 
+                'subject': request.form.get('subject'),
                 'id': cursor.lastrowid
             }
             status = 201
-        except: 
+        except:
             status = 400
             add_success = "error"
             fill_params = query_params
-        
+
     return render_template(
-        "subjects/add_subjects.html", 
-        success=add_success, 
-        subject=fill_params, 
+        "subjects/add_subjects.html",
+        success=add_success,
+        subject=fill_params,
         message=message_params
     ), status
 
 @app.route('/subjects/view_subjects', methods=["GET"])
 def view_subjects():
     return render_template("subjects/view_subjects.html")
-'''
-@app.route('/titles')
-def titles():
-    return render_template("titles.html")
-'''
+
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
     # step 5
@@ -318,12 +531,15 @@ def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
         # step 6 - Update, probably should be js-based like add_titles
+        # use this for editing Title info
         return render_template("titles/update_title.html")
     elif request.method =='DELETE':
         #step 6 - Delete, probably should be js-based like add_titles
+        # use this for removing items from title_subjects/title_creators
         return render_template("titles/update_title.html")
     elif request.method == 'POST':
         # step 5 - insert, probably should be js-based like add_titles
+        # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
     elif request.args.get('title_id') is None:
@@ -401,56 +617,63 @@ def add_item():
             cursor = db.execute_query(
                 db_connection=db_connection,
                 query=query, query_params=query_params)
-            # Tell the user we succeeded
-            results = {
-                'new_item_id': cursor.lastrowid,
-                'add_title_id': query_params['t_id'],
-                'add_cutter_num': query_params['c_num']
-            }
-            return jsonify(results), 201
         except:
             # On a failure, preserve the inputs so the Template can fill them back in.
             return jsonify(request_data), 400
-    else:
+
+        # Send back the new item info to indicate success
+        query_params = {'i_id': cursor.lastrowid}
+        query = "SELECT i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE i.item_id = %(i_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        return jsonify(results), 201
+
+    else: # method is GET
         query = "SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s"
         query_params = {'t_id': request.args.get('title_id')}
+        # get the current title
         try:
             cursor = db.execute_query(
                 db_connection=db_connection,
                 query=query, query_params=query_params)
         except:
             abort(400)
-        titles = cursor.fetchone()
-        return render_template("/items/add_item.html", title=titles), 200
+        current = cursor.fetchone()
+
+        # get the list of titles
+        query = "SELECT title_text, title_id FROM Titles ORDER BY title_text"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        titles= cursor.fetchall()
+
+        # get the existing copies of this title
+        items = None
+        if current is not None:
+            query = "SELECT i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_id = %(t_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            items = cursor.fetchall()
+
+
+
+        return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
 
 '''
-@app.route('/items')
-def items():
-    return render_template("items.html")
-
-@app.route('/items/checkout')
-def checkout_item():
-    return render_template("items/checkout.html")
-'''
-@app.route('/items/return_item.html', methods=['POST'])
+@app.route('/items/return_item.html', methods=['PUT'])
 def return_item():
     # step 6 - Update
-    return render_template("items/return_item.html")
 '''
-@app.route('/items/manage')
-def manage_item():
-    return render_template("items/collection.html")
-'''
-@app.route('/creators')
-def creators():
-    return render_template("creators.html")
 
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
     db_connection = get_db()
 
     fill_params = {
-        'fname': "", 
+        'fname': "",
         'lname': ""
     }
 
@@ -462,32 +685,32 @@ def add_creators():
         query = "INSERT INTO Creators (first_name, last_name) VALUES (%(fname)s, %(lname)s)"
         request_data = request.json
         query_params = {
-            'fname': request.form.get('fname'), 
+            'fname': request.form.get('fname'),
             'lname': request.form.get('lname')
         }
         for key in query_params.keys():
             if query_params[key] == "":
                 query_params[key] = None
-    # try: 
+    # try:
         cursor = db.execute_query(
-            db_connection=db_connection, 
+            db_connection=db_connection,
             query=query, query_params=query_params
         )
         add_success = "added"
         message_params = {
-            'fname': request.form.get('fname'), 
-            'lname': request.form.get('lname'), 
+            'fname': request.form.get('fname'),
+            'lname': request.form.get('lname'),
             'id': cursor.lastrowid
         }
         status = 201
-        # except: 
+        # except:
         #     status = 400
         #     add_sucess = "error"
         #     fill_params = query_params
-    
+
     return render_template(
-        "creators/add_creators.html", 
-        success=add_success, 
+        "creators/add_creators.html",
+        success=add_success,
         creator=fill_params,
         message = message_params
     ), status
@@ -507,39 +730,18 @@ def view_creators():
             search_string = '%' + request.args.get('lname') + '%'
             query_params = {'lname': search_string}
             query = query + " WHERE last_name LIKE %(lname)s"
-    
-    try: 
+
+    try:
         cursor = db.execute_query(
-            db_connection=db_connection, 
+            db_connection=db_connection,
             query=query, query_params=query_params
         )
         results = cursor.fetchall()
-    except: 
+    except:
         abort(400)
 
     return render_template("creators/view_creators.html", creators=results)
-'''
-@app.route('/relationships')
-def relationships():
-    return render_template("relationships.html")
 
-@app.route('/relationships/add_title_creators')
-def add_title_creators():
-    return render_template("relationships/add_title_creators.html")
-
-@app.route('/relationships/add_title_subjects')
-def add_title_subjects():
-    return render_template("relationships/add_title_subjects.html")
-
-@app.route('/relationships/view_title_creators')
-def view_title_creators():
-    return render_template("relationships/view_title_creators.html")
-
-
-@app.route('/relationships/view_title_subjects')
-def view_title_subjects():
-    return render_template("relationships/view_title_subjects.html")
-'''
 
 @app.errorhandler(400)
 def page_not_found(e):

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Weed Items from Collection</h2>
+<form method = "get" action="{{url_for('weed_items')}}">
+  <h3>Search By:</h3>
+  <p>
+    <input type="radio" name="searchBy" value="title" checked="checked"  id="title_text">
+    <label for="title_text"> Title: </label>
+    <input type="text" name="title_text" value="{{search['title_text']}}">
+  <p>
+    <input type="radio" name="searchBy" value="creator" id="last_name">
+    <label for="last_name"> Creator Last Name: </label>
+    <input type="text" name="last_name" value="{{search['last_name']}}">
+  <p>
+    <input type="radio" name="searchBy" value="subject" id="subject_heading">
+    <label for="subject_heading"> Subject Heading: </label>
+    <input type="text" name="subject_heading" value="{{search['subject_heading']}}">
+  <p>
+    <input type="submit" value="Search" name="search">
+</form>
+
+<table class="table table-bordered table-sm" style="caption-side: top">
+  <caption>Search Results:</caption>
+  <thead>
+    <tr>
+      <th>Item Id</th>
+      <th>Call Number</th>
+      <th>Title</th>
+    </tr>
+  </thead>
+  <tbody id="myTable">
+    {% for r in results %}
+    <tr id="row_{{r['item_id']}}">
+      <td>{{r['item_id']}}</td>
+      <td>{{r['call_number']}} {{r['cutter_number']}}</td>
+      <td>{{r['title_text']}}</td>
+      <td>
+        <form action="{{url_for['weed_items']}}">
+          <input type="hidden" value="{{r['item_id']}}" name="item_id">
+          <input type="submit" class="deleteButton" value="Weed Item">
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script src="{{url_for('static', filename='weed_items.js')}}">
+  var empty = [];
+</script>
+
+{% endblock %}

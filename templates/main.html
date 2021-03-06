@@ -12,24 +12,22 @@
         <dd>Page for manipulating the Borrowers table. Allows adding a new entry to Borrowers via a form.</dd>
         <dt><a href="/borrowers/view_borrowers?view=all">View/Modify Borrowers</a></dt>
         <dd>Allows displaying existing Borrowers in the system. The display of existing Borrowers can be searched/filtered by last_name, first_name, zip_code, and/or borrower_id. Displayed Borrowers can be updated or deleted.</dd>
-				<dt><a href="/borrowers/delete_borrower">Delete Borrower</a></dt>
-        <dd>Page that confirms deletion of a specific borrower.</dd>
-        <dt><a href="/borrowers/update_borrowers">Update Borrower</a></dt>
-        <dd>Page that allows updating the info for a given Borrower</dd>
-				<dt><a href="/borrowers/view_checkouts">View Checkouts</a></dt>
-        <dd>Page that allows viewing the Items a Borrower has checked out. These items can be checked back in.</dd>
+				<dt><a href="/borrowers/update_borrowers">Update Borrower</a></dt>
+				<dd>Page that allows updating the info for a given Borrower</dd>
       </dl>
     </dd>
 		<dt>Items</dt>
     <!-- <dd>Subpage to provide links to different Items-related functions.</dd> -->
     <dd>
       <dl>
-        <dt><a href="{{url_for('add_checkouts')}}">Checkouts</a></dt>
+        <dt><a href="{{url_for('add_checkouts')}}">Add Checkouts</a></dt>
         <dd>Page to check out Items to a specific borrower</dd>
-        <dt><a href="{{url_for('return_item')}}">Collection Management</a></dt>
-        <dd>Page for confirming the return of a borrowed Item.</dd>
 				<dt><a href="{{url_for('add_item')}}">Add Item</a></dt>
         <dd>Page for adding a copy of a specific Title to the library.</dd>
+				<dt><a href="{{url_for('view_checkouts')}}">View Checkouts</a></dt>
+        <dd>Page that allows viewing the Items a Borrower has checked out. These items can be checked back in.</dd>
+				<dt><a href="{{url_for('weed_items')}}">Weed Items</a></dt>
+        <dd>Page that allows deleting Items that are no longer needed or held from the library collection.</dd>
       </dl>
     </dd>
 		<dt>Titles</dt>
@@ -40,7 +38,7 @@
         <dd>Page for adding new instances of Titles to the system
         <dt><a href="{{url_for('search_titles')}}">Search Titles</a></dt>
         <dd>Allows searching the contents of the system by title. From here users can update detail titles in the system.</dd>
-				<dt><a href="{{url_for('search_titles')}}">Update Title</a></dt>
+				<dt><a href="{{url_for('update_title')}}">Update Title</a></dt>
         <dd>Allows modifying the details of a given title and managing (adding/removing) relationships to Subjects and Creators</dd>
       </dl>
     </dd>
