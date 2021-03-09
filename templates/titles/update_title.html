@@ -1,8 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Title Details</h2>
-<form id="updateTitleForm" method="put" action="{{url_for('update_title')}}">
+<h2>Update Title Details:</h2>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if title_info is none %}
+      <h3>No Title Selected</h3>
+      {% else %}
+      <h3>Updating Title:</h3>
+      <h4 id="currentTitle">{{title_info['title_text']}}</h4>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Title</h2>
+      <form method="GET" action="{{url_for('update_title')}}" id="form_switch_title">
+        <fieldset>
+          <legend>Select New Title</legend>
+          <p>
+            <select name="title_id" id="select_title_id">
+              {% for title in titles %}
+              <option value="{{title['title_id']}}" id="optionTitle{{title['title_id']}}" {{"selected" if title['title_id'] == title_info['title_id']}}>
+                {{title['title_text']}}
+              </option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="switchTitle" value="Switch Title">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+{% if title_info is not none %}
+<form id="updateTitleForm" action="{{url_for('update_title')}}">
   <fieldset>
     <legend>Title Information</legend>
     <input type="hidden" id="title_id" name="title_id" value="{{title_info['title_id']}}">
@@ -22,7 +53,7 @@
       <label for="new_call_num">Call Number:</label>
       <input type="text" id="new_call_num" name="call_number" value="{{title_info['call_number']}}">
     <p>
-      <input type="submit" id="update_title" value="Update Title" value="autofill">
+      <input type="submit" id="updateTitle" value="Update Title">
   </fieldset>
 </form>
 
@@ -153,5 +184,24 @@ $(document).ready(function(){
     });
   });
 });
+</script>
+{% endif %}
+<!-- Citation for selectmenu:
+Date 2021-02-28
+Copied from
+Source URL: https://jqueryui.com/selectmenu/-->
+<script src="https://code.jquery.com/jquery-1.12.4.js">
+  var empty1 = [];
+</script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+  var empty = [];
+</script>
+<script>
+  $( function() {
+    $( "#select_title_id" ).selectmenu();
+  } );
+</script>
+<script src="{{url_for('static', filename='update_titles.js')}}">
+  var empty = [];
 </script>
 {% endblock %}

@@ -531,8 +531,38 @@ def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
         # step 6 - Update, probably should be js-based like add_titles
-        # use this for editing Title info
-        return render_template("titles/update_title.html")
+        query = "UPDATE Titles SET title_text = %(t_text)s, publication_year = %(p_year)s, edition = %(edition)s, language = %(lang)s, call_number = %(c_num)s WHERE title_id = %(t_id)s"
+        request_data = request.json
+        query_params = {
+            't_text': request_data['title_text'],
+            'p_year': request_data['publication_year'],
+            'edition': request_data['edition'],
+            'lang': request_data['language'],
+            'c_num': request_data['call_number'],
+            't_id': request_data['title_id']
+        }
+        try:
+            # run the update
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+        except:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
+        query = "SELECT * FROM Titles WHERE title_id = %(t_id)s"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        results = cursor.fetchone()
+        print(results)
+        response = make_response(jsonify(results), 200)
+        response.mimetype = 'application/json'
+        return response
+
     elif request.method =='DELETE':
         #step 6 - Delete, probably should be js-based like add_titles
         # use this for removing items from title_subjects/title_creators
@@ -542,8 +572,8 @@ def update_title():
         # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
-    elif request.args.get('title_id') is None:
-        abort(400)
+    # elif request.args.get('title_id') is None:
+    #     abort(400)
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
@@ -556,8 +586,8 @@ def update_title():
         except:
             abort(400)
         title_results = cursor.fetchone()
-        if title_results == None:
-            abort(400)
+        # if title_results == None:
+        #     abort(400)
 
         # get creators associated with title
         query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
@@ -591,13 +621,21 @@ def update_title():
             db_connection=db_connection,
             query=query)
         subject_results = cursor.fetchall()
+
+        # get the list of titles
+        query = "SELECT title_text, title_id FROM Titles ORDER BY title_text"
+        cursor = db.execute_query(
+            db_connection=db_connection,
+            query=query, query_params=query_params)
+        titles= cursor.fetchall()
+
         return render_template(
             "titles/update_title.html",
             title_info=title_results,
             title_creators=title_creator_results,
             title_subjects=title_subject_results,
             creators=creator_results,
-            subjects=subject_results)
+            subjects=subject_results, titles=titles)
 
 @app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
