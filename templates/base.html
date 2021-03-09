@@ -45,14 +45,22 @@
 				      <li><a class="dropdown-item" href="{{url_for('view_subjects')}}">Search by Subject</a></li>
 				    </ul>
 					</li>
-		  			<li class="nav-item dropdown">
+		  		<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Creators</a>
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 							<li><a class="dropdown-item" href="{{url_for('add_creators')}}">Add Creators</a></li>
-            				<li><a class="dropdown-item" href="{{url_for('view_creators')}}">Search Creators</a></li>
+            	<li><a class="dropdown-item" href="{{url_for('view_creators')}}">Search Creators</a></li>
 						</ul>
 					</li>
-
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Items</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item" href="{{url_for('add_checkouts')}}">Add Checkouts</a></li>
+							<li><a class="dropdown-item" href="{{url_for('add_item')}}">Add Item</a></li>
+							<li><a class="dropdown-item" href="{{url_for('view_checkouts')}}">View Checkouts</a></li>
+							<li><a class="dropdown-item" href="{{url_for('weed_items')}}">Weed Items</a></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 		</div>
