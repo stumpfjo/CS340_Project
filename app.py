@@ -123,7 +123,6 @@ def update_borrowers():
             return response
 
         results = get_one_borrower(db_connection, query_params['b_id'])
-        print(results)
         response = make_response(jsonify(results), 200)
         response.mimetype = 'application/json'
         return response
