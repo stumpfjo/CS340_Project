@@ -256,7 +256,6 @@ def add_checkouts():
         response.mimetype = 'application/json'
         return response
 
-
     # routing for GET
     # get info of current borrower
     current = get_one_borrower(db_connection, request.args.get('id'))
@@ -624,12 +623,6 @@ def add_item():
 
 
         return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
-
-'''
-@app.route('/items/return_item.html', methods=['PUT'])
-def return_item():
-    # step 6 - Update
-'''
 
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
