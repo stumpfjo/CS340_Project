@@ -84,7 +84,7 @@ def add_borrowers():
             add_success = "error"
             fill_params = query_params
 
-    # Will have the coreect format for all scenarios
+    # Will have the correct format for all scenarios
     return render_template(
         "borrowers/add_borrowers.html",
         success=add_success,
@@ -95,7 +95,7 @@ def add_borrowers():
 
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
-    # step 6 - Update
+    # PUT request means we have been sent new data for a borrower
     db_connection = get_db()
     if request.method == 'PUT':
         query = "UPDATE Borrowers SET first_name = %(f_name)s, last_name = %(l_name)s, email = %(email)s, street_address = %(saddr)s, city_name = %(city)s, state = %(state)s, zip_code = %(zip)s WHERE borrower_id = %(b_id)s"
@@ -122,11 +122,13 @@ def update_borrowers():
             response.mimetype = "text/plain"
             return response
 
+        # send the updated borrower info back so the client can update display
         results = get_one_borrower(db_connection, query_params['b_id'])
         response = make_response(jsonify(results), 200)
         response.mimetype = 'application/json'
         return response
 
+    # behavior for GET. This is initial access or switch of borrower
     # Retrieve info for the selected borrower
     try:
         current = get_one_borrower(db_connection, request.args.get('id'))
@@ -163,6 +165,7 @@ def view_borrowers():
                 query_params = {'lname': search_string}
                 query = query + " WHERE last_name LIKE %(lname)s"
     try:
+        # run the query we constructed
         cursor = db.execute_query(
             db_connection=db_connection,
             query=query, query_params=query_params)
@@ -176,6 +179,7 @@ def view_borrowers():
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
+    # PUT means we are attempting a return
     if request.method == 'PUT':
         query = "UPDATE Items SET borrower_id = NULL, due_date = NULL WHERE item_id = %(i_id)s"
         request_data = request.json
@@ -201,7 +205,7 @@ def view_checkouts():
         response.mimetype = 'application/json'
         return response
 
-    # routing for GET
+    # routing for GET (initial access or switch of borrower)
     results = None
     status = 200
     try:
@@ -226,6 +230,7 @@ def view_checkouts():
 def add_checkouts():
     #step 6 - Update
     db_connection = get_db()
+    # PUT request used to send request for checkout
     if request.method == 'PUT':
         query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date)s WHERE item_id = %(i_id)s"
         request_data = request.json
@@ -256,7 +261,7 @@ def add_checkouts():
         response.mimetype = 'application/json'
         return response
 
-    # routing for GET
+    # routing for GET (access page or switch borrower)
     # get info of current borrower
     current = get_one_borrower(db_connection, request.args.get('id'))
 
@@ -294,8 +299,6 @@ def weed_items():
             response = make_response('Bad Request', 400)
             response.mimetype = "text/plain"
             return response
-
-
 
     # route for 'GET'
     results = [];
@@ -454,7 +457,7 @@ def search_titles():
 def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
-        # step 6 - Update, probably should be js-based like add_titles
+        # PUT request sends us new info for a title
         query = "UPDATE Titles SET title_text = %(t_text)s, publication_year = %(p_year)s, edition = %(edition)s, language = %(lang)s, call_number = %(c_num)s WHERE title_id = %(t_id)s"
         request_data = request.json
         query_params = {
@@ -496,8 +499,6 @@ def update_title():
         # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
-    # elif request.args.get('title_id') is None:
-    #     abort(400)
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
@@ -510,8 +511,6 @@ def update_title():
         except:
             abort(400)
         title_results = cursor.fetchone()
-        # if title_results == None:
-        #     abort(400)
 
         # get creators associated with title
         query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
@@ -563,9 +562,9 @@ def update_title():
 
 @app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
-    # step 5
     db_connection = get_db()
     if request.method == 'POST':
+        # POST used to send new item info
         query = "INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s)"
         request_data = request.json
         query_params = {
@@ -592,7 +591,7 @@ def add_item():
         results = cursor.fetchone()
         return jsonify(results), 201
 
-    else: # method is GET
+    else: # method is GET (Intitial access or title is switched)
         query = "SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s"
         query_params = {'t_id': request.args.get('title_id')}
         # get the current title
@@ -619,8 +618,6 @@ def add_item():
                 db_connection=db_connection,
                 query=query, query_params=query_params)
             items = cursor.fetchall()
-
-
 
         return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
 
