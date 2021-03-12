@@ -12,7 +12,7 @@ def get_checkouts(db_connection, borrower_id):
     return results
 
 def get_one_borrower(db_connection, borrower_id):
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
+    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
     query_params = {'b_id': borrower_id}
     cursor = db.execute_query(
         db_connection=db_connection,
@@ -21,7 +21,7 @@ def get_one_borrower(db_connection, borrower_id):
 
 def get_all_borrowers(db_connection):
     # Get a list of all borrowers to populate dropdown
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
+    query = "SELECT * FROM Borrowers"
     cursor = db.execute_query(
         db_connection=db_connection,
         query=query, query_params={})

@@ -122,25 +122,15 @@ def update_borrowers():
             response.mimetype = "text/plain"
             return response
 
-        query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-        results = cursor.fetchone()
+        results = get_one_borrower(db_connection, query_params['b_id'])
         print(results)
         response = make_response(jsonify(results), 200)
         response.mimetype = 'application/json'
         return response
 
     # Retrieve info for the selected borrower
-    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
-    query_params = {'b_id': request.args.get('id')}
     try:
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-            # Grab the results
-        current = cursor.fetchone()
+        current = get_one_borrower(db_connection, request.args.get('id'))
     except:
         abort(400)
 
