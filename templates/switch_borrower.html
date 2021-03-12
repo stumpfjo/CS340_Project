@@ -1,0 +1,30 @@
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if current is none %}
+      <h2>No Borrower Selected</h2>
+      {% else %}
+      <h2>{{banner}}</h2>
+      <h3>{{current['first_name']}} {{current['last_name']}}</h3>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h2>Switch Borrower</h2>
+      <form method="GET" action="{{url_for(request.endpoint)}}" id="form_switch_borrower">
+        <fieldset>
+          <legend>Select New Borrower</legend>
+          <p>
+            <select name="id">
+              {% for borrower in borrowers %}
+              <option value="{{borrower['borrower_id']}}" {{"selected" if borrower['borrower_id'] == current['borrower_id']}}>{{borrower['first_name']}} {{borrower['last_name']}}</option>
+              {% endfor %}
+            </select>
+          <p>
+            <input type="submit" id="addBorrower" value="Switch Borrower">
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
