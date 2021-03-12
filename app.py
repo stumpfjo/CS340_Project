@@ -310,19 +310,19 @@ def weed_items():
     if request.args.get('search'):
         if request.args.get('searchBy') == 'title':
             # LIKE match on title_text
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('title_text') + '%'
             query_params = {'t_text': search_string}
             search['title_text'] = request.args.get('title_text')
         elif request.args.get('searchBy') == 'creator':
             # LIKE match ofn creator last_name
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('last_name') + '%'
             query_params = {'l_name': search_string}
             search['last_name'] = request.args.get('last_name')
         elif request.args.get('searchBy') == 'subject':
             # LIKE match on subject_heading
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('subject_heading') + '%'
             query_params = {'s_head': search_string}
             search['subject_heading'] = request.args.get('subject_heading')

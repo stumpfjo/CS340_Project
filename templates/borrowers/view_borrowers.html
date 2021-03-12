@@ -42,6 +42,7 @@
 <table class="table table-bordered table-striped table-sm" style="font-size: x-small">
   <thead>
     <tr>
+      <th>ID</th>
       <th>Firstname</th>
       <th>Lastname</th>
       <th>Email</th>
@@ -55,6 +56,7 @@
     <!--iterate through the borrowers-->
     {% for borrower in borrowers %}
     <tr>
+      <td>{{borrower['borrower_id']}}</td>
       <td>{{borrower['first_name']}}</td>
       <td>{{borrower['last_name'] }}</td>
       <td>{{borrower['email']}}</td>
