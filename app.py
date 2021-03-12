@@ -7,13 +7,14 @@ from flask import Flask, render_template, request, json, jsonify, abort, make_re
 import database.db_connector as db
 import os
 from datetime import datetime, timedelta, date
+from data import states
+from helpers import *
 
 # db_connection = db.connect_to_database()
 
 # Configuration
 
 app = Flask(__name__)
-
 
 # Citation for the following function:
 # Date: 2021-02-23
@@ -26,26 +27,6 @@ def get_db():
     return app.db.connection()
 
 # Routes
-
-# Used to populate select box in template
-states = {
-    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
-    "CA": "California", "CO": "Colorado", "CT": "Connecticut",
-    "DE": "Delaware", "DC": "District Of Columbia", "FL": "Florida",
-    "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
-    "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky",
-    "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
-    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
-    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
-    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
-    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
-    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
-    "WI": "Wisconsin", "WY": "Wyoming"
-}
 
 @app.route('/')
 def index():
@@ -103,7 +84,7 @@ def add_borrowers():
             add_success = "error"
             fill_params = query_params
 
-    # Will have the coreect format for all scenarios
+    # Will have the correct format for all scenarios
     return render_template(
         "borrowers/add_borrowers.html",
         success=add_success,
@@ -112,15 +93,9 @@ def add_borrowers():
         states=states
     ), status
 
-@app.route('/borrowers/delete_borrower')
-def delete_borrower():
-    # step 6 - Delete
-    return render_template("borrowers/delete_borrower.html")
-
-
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
-    # step 6 - Update
+    # PUT request means we have been sent new data for a borrower
     db_connection = get_db()
     if request.method == 'PUT':
         query = "UPDATE Borrowers SET first_name = %(f_name)s, last_name = %(l_name)s, email = %(email)s, street_address = %(saddr)s, city_name = %(city)s, state = %(state)s, zip_code = %(zip)s WHERE borrower_id = %(b_id)s"
@@ -147,30 +122,21 @@ def update_borrowers():
             response.mimetype = "text/plain"
             return response
 
-        query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-        results = cursor.fetchone()
-        print(results)
+        # send the updated borrower info back so the client can update display
+        results = get_one_borrower(db_connection, query_params['b_id'])
         response = make_response(jsonify(results), 200)
         response.mimetype = 'application/json'
         return response
 
+    # behavior for GET. This is initial access or switch of borrower
     # Retrieve info for the selected borrower
-    query = "SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s"
-    query_params = {'b_id': request.args.get('id')}
     try:
-        cursor = db.execute_query(
-            db_connection=db_connection,
-            query=query, query_params=query_params)
-            # Grab the results
-        current = cursor.fetchone()
+        current = get_one_borrower(db_connection, request.args.get('id'))
     except:
         abort(400)
 
     # populate a dropdown to select a different borrower
-    borrowers = get_all_borrowers()
+    borrowers = get_all_borrowers(db_connection)
     return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
 @app.route('/borrowers/view_borrowers', methods=['GET'])
@@ -199,6 +165,7 @@ def view_borrowers():
                 query_params = {'lname': search_string}
                 query = query + " WHERE last_name LIKE %(lname)s"
     try:
+        # run the query we constructed
         cursor = db.execute_query(
             db_connection=db_connection,
             query=query, query_params=query_params)
@@ -209,39 +176,10 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
-def get_checkouts(borrower_id):
-    db_connection = get_db()
-    # Query to SELECT checkouts for a certain borrower_id
-    query = "SELECT b.borrower_id, t.title_text, i.item_id, i.due_date FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id WHERE b.borrower_id = %(b_id)s"
-    query_params = {'b_id': borrower_id}
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-    results = cursor.fetchall()
-    print(results)
-    return results
-
-def get_one_borrower(borrower_id):
-    db_connection = get_db()
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers WHERE borrower_id = %(b_id)s"
-    query_params = {'b_id': borrower_id}
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params=query_params)
-    return cursor.fetchone()
-
-def get_all_borrowers():
-    db_connection = get_db()
-    # Get a list of all borrowers to populate dropdown
-    query = "SELECT borrower_id, first_name, last_name FROM Borrowers"
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params={})
-    return cursor.fetchall()
-
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
+    # PUT means we are attempting a return
     if request.method == 'PUT':
         query = "UPDATE Items SET borrower_id = NULL, due_date = NULL WHERE item_id = %(i_id)s"
         request_data = request.json
@@ -259,7 +197,7 @@ def view_checkouts():
             response.mimetype = "text/plain"
             return response
 
-        results = get_checkouts(request_data['borrower_id'])
+        results = get_checkouts(db_connection, request_data['borrower_id'])
         for r in results:
             if r['due_date']:
                 r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
@@ -267,12 +205,12 @@ def view_checkouts():
         response.mimetype = 'application/json'
         return response
 
-    # routing for GET
+    # routing for GET (initial access or switch of borrower)
     results = None
     status = 200
     try:
         # nonsense borrower_ids should generate an empty result
-        results = get_checkouts(request.args.get('id'))
+        results = get_checkouts(db_connection, request.args.get('id'))
         for r in results:
             if r['due_date']:
                 r['due_date'] = r['due_date'].strftime('%Y-%m-%d')
@@ -281,26 +219,18 @@ def view_checkouts():
         abort(400)
 
     # get info of current borrower
-    current = get_one_borrower(request.args.get('id'))
+    current = get_one_borrower(db_connection, request.args.get('id'))
 
     # Get a list of all borrowers to populate dropdown
-    borrowers = get_all_borrowers()
+    borrowers = get_all_borrowers(db_connection)
 
     return render_template("items/view_checkouts.html", results=results, current=current, borrowers=borrowers), status
-
-def get_available_items():
-    # get a list of items available for checkout
-    db_connection = get_db()
-    query = "SELECT i.item_id, t.title_text, t.call_number, i.cutter_number FROM Items AS i NATURAL JOIN Titles as t WHERE i.borrower_id IS NULL"
-    cursor = db.execute_query(
-        db_connection=db_connection,
-        query=query, query_params={})
-    return cursor.fetchall()
 
 @app.route('/items/add_checkouts', methods=['GET','PUT'])
 def add_checkouts():
     #step 6 - Update
     db_connection = get_db()
+    # PUT request used to send request for checkout
     if request.method == 'PUT':
         query = "UPDATE Items SET borrower_id = %(b_id)s, due_date = %(d_date)s WHERE item_id = %(i_id)s"
         request_data = request.json
@@ -322,7 +252,7 @@ def add_checkouts():
             return response
 
         # get a list of items available for checkout
-        available_items = get_available_items()
+        available_items = get_available_items(db_connection)
         data = {
             'borrower_id': request_data['borrower_id'],
             'available_items': available_items
@@ -331,19 +261,18 @@ def add_checkouts():
         response.mimetype = 'application/json'
         return response
 
-
-    # routing for GET
+    # routing for GET (access page or switch borrower)
     # get info of current borrower
-    current = get_one_borrower(request.args.get('id'))
+    current = get_one_borrower(db_connection, request.args.get('id'))
 
     # Get a list of all borrowers to populate dropdown
-    borrowers = get_all_borrowers()
+    borrowers = get_all_borrowers(db_connection)
 
     results = ""
     available_items={}
     if current is not None:
         # get a list of items available for checkout
-        available_items = get_available_items()
+        available_items = get_available_items(db_connection)
 
     return render_template("items/add_checkouts.html", current=current, borrowers=borrowers, available_items=available_items)
 
@@ -371,8 +300,6 @@ def weed_items():
             response.mimetype = "text/plain"
             return response
 
-
-
     # route for 'GET'
     results = [];
     search = {
@@ -383,19 +310,19 @@ def weed_items():
     if request.args.get('search'):
         if request.args.get('searchBy') == 'title':
             # LIKE match on title_text
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t WHERE t.title_text LIKE %(t_text)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('title_text') + '%'
             query_params = {'t_text': search_string}
             search['title_text'] = request.args.get('title_text')
         elif request.args.get('searchBy') == 'creator':
             # LIKE match ofn creator last_name
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Creators as tc NATURAL JOIN Creators as c WHERE c.last_name LIKE %(l_name)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('last_name') + '%'
             query_params = {'l_name': search_string}
             search['last_name'] = request.args.get('last_name')
         elif request.args.get('searchBy') == 'subject':
             # LIKE match on subject_heading
-            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s"
+            query = "SELECT DISTINCT i.item_id, i.cutter_number, t.title_text, t.call_number FROM Items AS i NATURAL JOIN Titles AS t NATURAL JOIN Title_Subjects as ts NATURAL JOIN Subjects as s WHERE s.subject_heading LIKE %(s_head)s ORDER BY t.title_text"
             search_string = '%' + request.args.get('subject_heading') + '%'
             query_params = {'s_head': search_string}
             search['subject_heading'] = request.args.get('subject_heading')
@@ -530,7 +457,7 @@ def search_titles():
 def update_title():
     db_connection = get_db()
     if request.method == 'PUT':
-        # step 6 - Update, probably should be js-based like add_titles
+        # PUT request sends us new info for a title
         query = "UPDATE Titles SET title_text = %(t_text)s, publication_year = %(p_year)s, edition = %(edition)s, language = %(lang)s, call_number = %(c_num)s WHERE title_id = %(t_id)s"
         request_data = request.json
         query_params = {
@@ -572,8 +499,6 @@ def update_title():
         # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
         return render_template("titles/update_title.html")
-    # elif request.args.get('title_id') is None:
-    #     abort(400)
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
@@ -586,8 +511,6 @@ def update_title():
         except:
             abort(400)
         title_results = cursor.fetchone()
-        # if title_results == None:
-        #     abort(400)
 
         # get creators associated with title
         query = 'SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s'
@@ -639,9 +562,9 @@ def update_title():
 
 @app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
-    # step 5
     db_connection = get_db()
     if request.method == 'POST':
+        # POST used to send new item info
         query = "INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s)"
         request_data = request.json
         query_params = {
@@ -668,7 +591,7 @@ def add_item():
         results = cursor.fetchone()
         return jsonify(results), 201
 
-    else: # method is GET
+    else: # method is GET (Intitial access or title is switched)
         query = "SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s"
         query_params = {'t_id': request.args.get('title_id')}
         # get the current title
@@ -696,15 +619,7 @@ def add_item():
                 query=query, query_params=query_params)
             items = cursor.fetchall()
 
-
-
         return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
-
-'''
-@app.route('/items/return_item.html', methods=['PUT'])
-def return_item():
-    # step 6 - Update
-'''
 
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
