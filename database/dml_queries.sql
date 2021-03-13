@@ -1,207 +1,366 @@
 --  Database Manipulation queries for  Project Website
--- : character used to denote variables with data from backend
+-- %(<var_name>)s used to denote variables with data from backend
 
--- Add a new borrower from the add_borrowers page
-INSERT INTO Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code)
-VALUES (:fnameInput, :lnameInput, :emailInput, :addrInput, :cityInput, :stateInput, :zipInput);
+-- Add a new borrower from the add_borrowers page using data from the interface
+INSERT INTO Borrowers (
+    first_name,
+    last_name,
+    email,
+    street_address,
+    city_name,
+    state,
+    zip_code)
+  VALUES (
+    %(fname)s,
+    %(lname)s,
+    %(email)s,
+    %(saddr)s,
+    %(city)s,
+    %(state)s,
+    %(zip)s);
 
--- Find borrowers in the view borrowers table
--- Show all borrowers (default display)
+-- Update borrowers from the update_borrwer page with new information from the interface
+UPDATE Borrowers SET
+    first_name = %(f_name)s,
+    last_name = %(l_name)s,
+    email = %(email)s,
+    street_address = %(saddr)s,
+    city_name = %(city)s,
+    state = %(state)s,
+    zip_code = %(zip)s
+  WHERE borrower_id = %(b_id)s;
+
+-- Select a single Borrower's information, used to support Borrower update and checkout/returns, and for search by borrower id
+SELECT * FROM Borrowers WHERE borrower_id = %(b_id)s;
+
+-- Find all borrowers in the view borrowers table. used to populate dropdowns to select borrowers for updating as well as for checkouts/returns as well as for default disp
 SELECT * FROM Borrowers;
--- Exact Match First Name
-SELECT * FROM Borrowers WHERE first_name = :fnameInput;
--- Partial Match First Name
-SELECT * FROM Borrowers WHERE first_name LIKE '%:fnameInput%';
--- Exact Match Last Name
-SELECT * FROM Borrowers WHERE last_name = :lnameInput;
--- Partial Match Last Name
-SELECT * FROM Borrowers WHERE last_name LIKE '%:lnameInput%';
--- Zip Code search
-SELECT * FROM Borrowers WHERE zip_code = :zipInput;
--- ID search
-SELECT * FROM Borrowers WHERE borrower_id = :idInput;
--- These predicates can be combined algorithmically by the backend
--- one example:
-SELECT * FROM Borrowers WHERE last_name = :lnameInput; AND first_name LIKE '%:fnameInput%';
 
--- Choose a specific borrower to update via the Update button on the view_borrowers page.
-SELECT * FROM Borrowers WHERE borrower_id = :idInput;
-
--- Update borrowers from the update_borrwer page
-UPDATE Borrowers
-SET
-  first_name = :fnameInput,
-  last_name = :lnameInput,
-  email = :emailInput,
-  street_address = :addrInput,
-  city_name = :cityInput,
-  state = :stateInput,
-  zip_code = :zipInput
-WHERE borrower_id = :idInput;
-
--- View Checkouts for a borrower from the view_checkouts page.
-SELECT
-  b.first_name, b.last_name, t.title_text, i.item_id, i.due_date
-FROM
-  Titles AS t NATURAL JOIN Items as i NATURAL JOIN Borrowers as b
-WHERE
-  borrower_id = :idInput;
-
--- Return items that a borrower has brought back via the Return button on the view_checkouts page.
-UPDATE Items
-SET
-  borrower_id = NULL,
-  due_date = NULL
-WHERE
-  item_id = :itemInput;
-
--- Add Checkouts to a borrower from the add_checkouts page.
-UPDATE Items
-SET
-  borrower_id = :borrowerInput,
-  due_date = :dateInput
-WHERE
-  item_id = :itemInput;
-
--- Remove borrowers from the system vi the delete button on the view_borrowers page.
-DELETE FROM Borrowers WHERE borrower_id = :idInput;
-
--- Add a new title from the add_titles page
-INSERT INTO Titles (title_text, publication_year, edition, language, call_number)
-VALUES (:titleInput, :yearInput, :editionInput, :langInput, :callNoInput);
-
---Display title info on the search_titles page
-SELECT title_id, title_text, language, publication_year FROM Titles;
-
---Display only titles associated with items on the search_titles page
-SELECT t.title_id, t.title_text, t.language, t.publication_year FROM Titles AS t NATURAL JOIN Items as i;
-
--- Add a copy of a title (item) to the library collection from the add_item page.
-INSERT INTO items (title_id, borrower_id, due_date, cutter_number)
-VALUES (:titleInput, NULL, NULL, :cutterInput);
-
---Display the details of a specific title using the View/Update Details button from the search_titles page.
-SELECT
-  title_id, title_text, publication_year, edition, language, call_number,
-FROM
-  Titles
-WHERE
-  title_id = :idInput;
-SELECT
-  creator_id, first_name, last_name
-FROM
-  Creators
-WHERE creator_id IN (select creator_id FROM Title_Creators WHERE title_id = :idInput);
-SELECT
-  subject_id, subject_heading
-FROM
-  Subjects
-WHERE subject_id IN (select subject_id FROM Title_Subjects WHERE title_id = :idInput);
-
--- Add a new creator from the add_creators page
-INSERT INTO `Creators` (`first_name`, `last_name`)
-VALUES (:fnameInput, :lnameInput);
-
--- Add a new subject from the add_subjects page
-INSERT INTO `Subjects` (`subject_heading`)
-VALUES (:subjectInput);
-
--- Display creators' first and last name in the view_creators page
-SELECT first_name, last_name FROM Creators;
-
--- get all subjects to populate the subjects dropdown in view_subjects page
-SELECT subject_heading FROM Subjects;
-
--- get all titles associated with selected subject in view_subjects page
-SELECT Titles.title_text, Titles.language, Titles.publication_year FROM Titles
-JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id
-JOIN Subjects ON Title_Subjects.subject_id = Subjects.subject_id
-WHERE Subjects.subject_heading = :subjectInput;
-
--- display all creators associated with a title in update/details tab
-SELECT Creators.first_name, Creators.last_name FROM Creators
-JOIN Title_Creators ON Creators.creator_id = Title_Creators.creator_id
-JOIN Titles ON Title_Creators.title_id = Titles.title_id
-WHERE Titles.title_id = :titleIdInput;
-
--- display all subjects associated with a title in update/details tab
-SELECT Subjects.subject_heading FROM Subjects
-JOIN Title_Subjects ON Title_Subjects.subject_id = Subjects.subject_id
-JOIN Titles ON Titles.title_id = Title_Subjects.title_id
-WHERE Titles.title_id = :titleIdInput;
-
--- add creator/title relationship for a specific title in update/details tab
-INSERT INTO `Title_Creators` (`title_id`, `creator_id`)
-VALUES (:titleIdInput, :creatorIdInput);
-
--- add subject/title relationship for a specific title in update/details tab
-INSERT INTO `Title_Subjects` (`title_id`, `subject_id`)
-VAULES (:titleIdInput, :subjectInput);
-
--- remove creator/title relationship for a specific title in update/details tab
-DELETE FROM Title_Creators
-WHERE Title_Creators.title_id = :titleIdInput AND Title_Creators.creator_id = :creatorIdInput;
-
--- remove subject/title relationship for a specific title in update/details tab
-DELETE FROM Title_Subjects
-WHERE Title_Subjects.title_id = :titleIdInput AND Title_Subjects.subject_id = :subjectIdInput;
-
--- %(<identifier>)s used as parameter in following:
-
--- Select queries for searching titles
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text LIKE %(t_text)s;
-
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text LIKE %(t_text)s AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
-
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text LIKE %(t_text)s AND IFNULL(os.on_shelf,0) > 0;
-
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text = %(t_text)s;
-
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text = %(t_text)s AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
-
-SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf
-FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id
-WHERE title_text = %(t_text)s AND IFNULL(os.on_shelf,0) > 0;
-
--- Insert query for add_borrowers
-INSERT INTO
-  Borrowers (first_name, last_name, email, street_address, city_name, state, zip_code)
-VALUES
-  (%(fname)s, %(lname)s, %(email)s, %(saddr)s, %(city)s, %(state)s, %(zip)s);
-
--- Select queries used to implement borrower search
-SELECT * FROM Borrowers;
-SELECT * FROM Borrowers WHERE borrower_id = %(id)s;
+-- Queries to support various search options on view_borrowers
+-- search by exact last name
 SELECT * FROM Borrowers WHERE last_name = %(lname)s;
+-- search by partial match last name (%(lname)s has '%' appended and prepended by backend code)
 SELECT * FROM Borrowers WHERE last_name LIKE %(lname)s;
 
--- Select query used to subbort view_checkouts page
-SELECT b.borrower_id, b.first_name, b.last_name, t.title_text, i.item_id, i.due_date
-FROM Titles AS t NATURAL JOIN Items as i RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id
-WHERE b.borrower_id = %(b_id)s;
+-- Queries to implement returs from view_checkouts
+-- Return an Item when a Borrower brings it back
+UPDATE Items SET
+    borrower_id = NULL,
+    due_date = NULL
+  WHERE item_id = %(i_id)s;
 
--- Insert query used to add new titles
-INSERT INTO Titles (title_text, publication_year, edition, language, call_number)
-VALUES (%(t_text)s, %(p_year)s, %(ed)s, %(lang)s, %(c_num)s);
+-- Retrieve Items currently checked out to a Borrower
+SELECT
+    b.borrower_id,
+    t.title_text,
+    i.item_id,
+    i.due_date
+  FROM Titles AS t
+    NATURAL JOIN Items as i
+    RIGHT OUTER JOIN Borrowers as b ON i.borrower_id = b.borrower_id
+  WHERE b.borrower_id = %(b_id)s;
 
--- Insert query for adding new items
-INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s);
--- Select query to populate forms on add_items page
-SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s;
+-- Queries to implement chaecking out Items to borrowers
+-- Check out an item to a borrower:
+UPDATE Items SET
+    borrower_id = %(b_id)s,
+    due_date = %(d_date)s
+  WHERE item_id = %(i_id)s;
 
--- Queries used to populate fields on page for updating titles
+-- Display Items that are 'On-Shelf' (available for checkout)
+SELECT
+    i.item_id,
+    t.title_text,
+    t.call_number,
+    i.cutter_number
+  FROM Items AS i
+    NATURAL JOIN Titles as t
+  WHERE i.borrower_id IS NULL;
+
+-- Queries to support weed_items (deletion from Items table)
+-- Weed an Item from the library collection:
+DELETE FROM Items WHERE item_id = %(i_id)s;
+-- Search queries for Items that can be deleted variables after 'LIKE' operator have '%' appended and prepended by code
+-- search by title:
+SELECT DISTINCT
+    i.item_id,
+    i.cutter_number,
+    t.title_text,
+    t.call_number
+  FROM Items AS i NATURAL JOIN
+    Titles AS t
+  WHERE t.title_text LIKE %(t_text)s
+  ORDER BY t.title_text;
+-- search by creator
+SELECT DISTINCT
+    i.item_id,
+    i.cutter_number,
+    t.title_text,
+    t.call_number
+  FROM Items AS i
+    NATURAL JOIN Titles AS t
+    NATURAL JOIN Title_Creators as tc
+    NATURAL JOIN Creators as c
+  WHERE c.last_name LIKE %(l_name)s
+  ORDER BY t.title_text;
+-- search by subject
+SELECT DISTINCT
+    i.item_id,
+    i.cutter_number,
+    t.title_text,
+    t.call_number
+  FROM Items AS i
+    NATURAL JOIN Titles AS t
+    NATURAL JOIN Title_Subjects as ts
+    NATURAL JOIN Subjects as s
+  WHERE s.subject_heading LIKE %(s_head)s
+  ORDER BY t.title_text;
+
+-- Add a new subject_heading
+INSERT INTO Subjects (subject_heading) VALUES (%(subject)s);
+
+-- Add a new Title to the systems
+INSERT INTO Titles (
+    title_text,
+    publication_year,
+    edition,
+    language,
+    call_number)
+  VALUES (
+    %(t_text)s,
+    %(p_year)s,
+    %(ed)s,
+    %(lang)s,
+    %(c_num)s);
+
+--Queries for searching the Titles table variables used with 'LIKE' operator have '%' appended and prepended by code:
+-- Search by exact Title match:
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text = %(t_text)s;
+--Search by partial title matche
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text LIKE %(t_text)s;
+-- Qualify exact title search by whether a corresponding Item exists
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text = %(t_text)s
+    AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
+-- Qualify partial title search by whether a corresponding Item exists
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text LIKE %(t_text)s
+    AND IFNULL(co.checked_out,0) + IFNULL(os.on_shelf,0) > 0;
+-- Qualify exact title search by whether a corresponding item is available for checkout
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text = %(t_text)s
+    AND IFNULL(os.on_shelf,0) > 0;
+-- Qualify partial title search by whether a corresponding item is available for checkout
+SELECT
+    t.title_id,
+    t.title_text,
+    t.language,
+    t.publication_year,
+    IFNULL(co.checked_out,0) AS num_checked_out,
+    IFNULL(os.on_shelf,0) AS num_on_shelf
+  FROM Titles AS t
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS checked_out
+        FROM Items
+        WHERE borrower_id IS NOT NULL
+        GROUP BY title_id) AS co
+      ON t.title_id = co.title_id
+    LEFT OUTER JOIN (
+      SELECT
+          title_id,
+          COUNT(*) AS on_shelf
+        FROM Items
+        WHERE borrower_id IS NULL
+        GROUP BY title_id) AS os
+      ON t.title_id = os.title_id
+  WHERE title_text LIKE %(t_text)s
+    AND IFNULL(os.on_shelf,0) > 0;
+
+-- Queries to implement the update_title page
+-- update a title with new info from the interface
+UPDATE Titles SET
+    title_text = %(t_text)s,
+    publication_year = %(p_year)s,
+    edition = %(edition)s,
+    language = %(lang)s,
+    call_number = %(c_num)s
+  WHERE title_id = %(t_id)s;
+-- Get curent info about a title to prefill form
 SELECT * FROM Titles WHERE title_id = %(t_id)s;
-SELECT tc.creator_catalog_id, t.title_id ,c.first_name, c.last_name FROM Titles as t NATURAL JOIN Title_Creators AS tc NATURAL JOIN Creators AS c WHERE title_id = %(t_id)s
-SELECT ts.subject_catalog_id, t.title_id, s.subject_heading FROM Titles as t NATURAL JOIN Title_Subjects AS ts NATURAL JOIN Subjects AS s WHERE title_id = %(t_id)s
-SELECT * FROM Creators
-SELECT * FROM Subjects
+-- Get creators associated with a title:
+SELECT
+    tc.creator_catalog_id,
+    t.title_id,
+    c.first_name,
+    c.last_name
+  FROM Titles as t
+    NATURAL JOIN Title_Creators AS tc
+    NATURAL JOIN Creators AS c
+  WHERE title_id = %(t_id)s;
+--Get subjects associated with a title:
+SELECT
+    ts.subject_catalog_id,
+    t.title_id,
+    s.subject_heading
+  FROM Titles as t
+    NATURAL JOIN Title_Subjects AS ts
+    NATURAL JOIN Subjects AS s
+  WHERE title_id = %(t_id)s;
+--populate a  list of creators to associate
+SELECT * FROM Creators;
+--populate a  list of creators to associate
+SELECT * FROM Subjects;
+--populate a dropdown list so we can switch which title we are working with
+SELECT title_text, title_id FROM Titles ORDER BY title_text;
+
+-- Queries to support adding additional copies (Items) linke to a Title
+-- add an Item
+INSERT INTO Items (title_id, cutter_number) VALUES (%(t_id)s, %(c_num)s);
+-- return info about an Item
+SELECT
+    i.cutter_number,
+    t.title_text,
+    t.call_number
+  FROM Items AS i
+    NATURAL JOIN Titles AS t
+  WHERE i.item_id = %(i_id)s;
+-- Get info about the current title being worked with
+SELECT title_text, title_id FROM Titles WHERE title_id=%(t_id)s;
+--Populate a dropdown for switching titles
+SELECT title_text, title_id FROM Titles ORDER BY title_text;
+-- Show current Items associated with the current title
+SELECT
+    i.cutter_number,
+    t.title_text,
+    t.call_number
+  FROM Items AS i
+    NATURAL JOIN Titles AS t
+  WHERE t.title_id = %(t_id)s;
+
+-- Add a new creator
+INSERT INTO Creators (first_name, last_name) VALUES (%(fname)s, %(lname)s);
+
+--Searching for creators:
+--search by last name exact match:
+SELECT * FROM Creators WHERE last_name = %(lname)s;
+--search by last name partial match %(lname)s has '%' appended and prepended by code:
+SELECT * FROM Creators WHERE last_name LIKE %(lname)s;
