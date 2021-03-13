@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Add New Subject</h2>
+<h1>Add New Subject</h1>
 <form id="newSubjectForm" method="post" action"{{url_for('add_subjects')}}>
   <fieldset>
     <legend>New Subject</legend>
@@ -18,7 +18,7 @@
 </p>
 {% elif success == "error" %}
 <p>
-  Error adding Subject. 
+  Error adding Subject.
 </p>
 {% endif %}
 {% endblock %}

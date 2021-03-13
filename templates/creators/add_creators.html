@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Add New Creator</h2>
+<h1>Add New Creator</h1>
 <form id="newCreatorForm" method="post" action"{{url_for('add_creators')}}>
   <fieldset>
     <legend>New Creator Information</legend>
@@ -22,7 +22,7 @@
 </p>
 {% elif success == "error" %}
 <p>
-  Error adding Creator. 
+  Error adding Creator.
 </p>
 {% endif %}
 {% endblock %}

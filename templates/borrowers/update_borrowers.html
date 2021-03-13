@@ -5,10 +5,10 @@
   <div class="row">
     <div class="col">
       {% if current is none %}
-      <h2>No Borrower Selected</h2>
+      <h1>No Borrower Selected</h1>
       {% else %}
-      <h2>Modify Borrower</h2>
-      <h3 id="currentBorrower">{{current['first_name']}} {{current['last_name']}}</h3>
+      <h1>Modify Borrower</h1>
+      <h2 id="currentBorrower">{{current['first_name']}} {{current['last_name']}}</h2>
       <form id="updateBorrowerForm">
         <fieldset>
           <legend>Borrower Information</legend>
@@ -43,7 +43,7 @@
       {% endif %}
     </div>
     <div class="col">
-      <h2>Switch Borrower</h2>
+      <h1>Switch Borrower</h1>
       <form method="GET" action="{{url_for('update_borrowers')}}" id="form_switch_borrower">
         <fieldset>
           <legend>Select New Borrower</legend>
