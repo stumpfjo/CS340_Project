@@ -424,7 +424,7 @@ def search_titles():
     # step 5
     db_connection = get_db()
     if request.args.get('search') != 'Search':
-        return render_template("titles/search_titles.html", titles=None)
+        return render_template("titles/search_titles.html", titles=None, search_string='')
     else:
         query = "SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf FROM Titles AS t LEFT OUTER JOIN (select title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (select title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id"
 
@@ -451,7 +451,7 @@ def search_titles():
             results = cursor.fetchall()
         except:
             abort(400)
-        return render_template("titles/search_titles.html", titles=results)
+        return render_template("titles/search_titles.html", titles=results, search_string=request.args.get('title_text'))
 
 @app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def update_title():
