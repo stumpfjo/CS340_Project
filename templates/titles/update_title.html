@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Update Title Details:</h2>
+<h1>Update Title Details:</h1>
 <div class="container">
   <div class="row">
     <div class="col">
       {% if title_info is none %}
-      <h3>No Title Selected</h3>
+      <h2>No Title Selected</h2>
       {% else %}
-      <h3>Updating Title:</h3>
-      <h4 id="currentTitle">{{title_info['title_text']}}</h4>
+      <h2>Updating Title:</h2>
+      <h3 id="currentTitle">{{title_info['title_text']}}</h3>
       {% endif %}
     </div>
     <div class="col">

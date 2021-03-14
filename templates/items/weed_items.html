@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Weed Items from Collection</h2>
+<h1>Weed Items from Collection</h1>
 <form method = "get" action="{{url_for('weed_items')}}">
-  <h3>Search By:</h3>
+  <h2>Search By:</h2>
   <p>
     <input type="radio" name="searchBy" value="title" checked="checked"  id="title_text">
     <label for="title_text"> Title: </label>
