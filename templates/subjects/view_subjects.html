@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Search Titles by Subject</h1>
+<h2>Search Titles by Subject</h2>
 <form id="sortBySubject">
     <fieldset>
         <legend>Select a Subject: </legend>
         <p>
-            <select name="selectSubject" id="selectSubject">
-                <option value="horror">Horror</option>
-            </select>
+            <select name="subjectId" id="selectSubject">
+                {% for subject in subjects %}
+                <option value="{{subject['subject_id']}}">{{subject['subject_heading']}}</option>
+                {% endfor %}
+              </select>
         <p>
             <input type="submit" id="submitSubjectSelect" value="Select">
     </fieldset>
@@ -16,6 +18,7 @@
 <h2>Search Titles</h2>
 <input class="form-control" id="myInput" type="text" placeholder="Search...">
 <br>
+<h2>Results Display</h2>
 <table class="table table-bordered table-striped table-sm" style="font-size: x-small; caption-side: top" id="myTable">
   <caption>Search Results</caption>
   <thead>
@@ -25,32 +28,14 @@
       <th>Publication Year</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="subjectTitles">
+    {% for title in titles %}
     <tr>
-      <td>Frankenstein</td>
-      <td>English</td>
-      <td>1818</td>
+      <td>{{title['title_text']}}</td>
+      <td>{{title['language']}}</td>
+      <td>{{title['publication_year']}}</td>
     </tr>
-    <tr>
-      <td>Dracula</td>
-      <td>English</td>
-      <td>1897</td>
-    </tr>
-    <tr>
-      <td>The Exorcist</td>
-      <td>English</td>
-      <td>1971</td>
-    </tr>
-    <tr>
-      <td>The Shining</td>
-      <td>English</td>
-      <td>1977</td>
-    </tr>
-    <tr>
-      <td>The Silence of the Lambs</td>
-      <td>English</td>
-      <td>1988</td>
-    </tr>
+    {% endfor %}
   </tbody>
 </table>
 
@@ -68,4 +53,5 @@ $(document).ready(function(){
   });
 });
 </script>
+<script src="{{url_for('static', filename='view_subjects.js')}}"></script>
 {% endblock %}
