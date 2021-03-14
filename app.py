@@ -379,9 +379,34 @@ def add_subjects():
         message=message_params
     ), status
 
+
 @app.route('/subjects/view_subjects', methods=["GET"])
 def view_subjects():
-    return render_template("subjects/view_subjects.html")
+    subjectId = request.args.get('subjectId', default=-1, type=int)
+    db_connection_subjects = get_db()
+
+    query = "SELECT * FROM Subjects"
+
+    cursorSubjects = db.execute_query(
+        db_connection=db_connection_subjects,
+        query=query, query_params=None
+    )
+    subjectResults = cursorSubjects.fetchall()
+    subjectTitlesResults = []
+    if subjectId > 0:
+        query = "SELECT * FROM Titles JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id WHERE subject_id = %(s_id)s"
+        query_params = {
+            's_id': subjectId
+        }
+
+        db_connection_titles = get_db()
+
+        cursorTitles = db.execute_query(
+            db_connection=db_connection_titles,
+            query=query, query_params=query_params)
+        subjectTitlesResults = cursorTitles.fetchall()
+
+    return render_template("/subjects/view_subjects.html", subjects=subjectResults, titles=subjectTitlesResults)
 
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
