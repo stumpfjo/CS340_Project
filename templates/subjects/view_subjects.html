@@ -8,7 +8,8 @@
         <p>
             <select name="subjectId" id="selectSubject">
                 {% for subject in subjects %}
-                <option value="{{subject['subject_id']}}">{{subject['subject_heading']}}</option>
+                <option value="{{subject['subject_id']}}" {{"selected" if selected == subject['subject_id']}}>
+                  {{subject['subject_heading']}}</option>
                 {% endfor %}
               </select>
         <p>

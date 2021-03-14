@@ -393,6 +393,9 @@ def view_subjects():
     )
     subjectResults = cursorSubjects.fetchall()
     subjectTitlesResults = []
+
+    selected = subjectResults[0]['subject_id']
+
     if subjectId > 0:
         query = "SELECT * FROM Titles JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id WHERE subject_id = %(s_id)s"
         query_params = {
@@ -405,8 +408,9 @@ def view_subjects():
             db_connection=db_connection_titles,
             query=query, query_params=query_params)
         subjectTitlesResults = cursorTitles.fetchall()
+        selected = subjectId
 
-    return render_template("/subjects/view_subjects.html", subjects=subjectResults, titles=subjectTitlesResults)
+    return render_template("/subjects/view_subjects.html", subjects=subjectResults, titles=subjectTitlesResults, selected=selected)
 
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
