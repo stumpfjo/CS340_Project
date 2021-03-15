@@ -607,6 +607,7 @@ def update_title():
             query_params['last_name'] = results['last_name']
             query_params['first_name'] = results['first_name']
             query_params['action'] = '/titles/update_title'
+
             response = make_response(jsonify(query_params), 200)
             response.mimetype = "application/json"
             return response
@@ -637,6 +638,7 @@ def update_title():
             results = cursor.fetchone()
             query_params['subject_heading'] = results['subject_heading']
             query_params['action'] = '/titles/update_title'
+            
             response = make_response(jsonify(query_params), 200)
             response.mimetype = "application/json"
             return response

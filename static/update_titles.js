@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
   if (updateButton !== null) {
     updateButton.addEventListener('click', sendUpdate);
   }
+  // add event listeners to handle linking/unlinking Creators and Subjects
+  // with the current title
   deleteCreatorButtons = document.getElementsByClassName('removeCreatorButton');
   if (deleteCreatorButtons.length>0) {
     for (var i = 0; i<deleteCreatorButtons.length;i++) {
@@ -30,15 +32,20 @@ document.addEventListener('DOMContentLoaded', function(event) {
   }
 });
 
+// Build a new row to display a linked subject based on some data
 function newSubjectRow(subjectData) {
+  //create a new row container
   newRow = document.createElement('tr');
   newRow.setAttribute(
     'id',`deleteSubjectRow_${subjectData['subject_catalog_id']}`
   );
+
+  //build the row contents
   newCell = document.createElement('td');
   newCell.textContent = subjectData['subject_heading'];
   newRow.appendChild(newCell);
 
+  //create a form for deleting the new entry
   newForm = document.createElement('form');
   newForm.setAttribute('action', subjectData['action']);
   newForm.setAttribute('method','post');
@@ -65,11 +72,14 @@ function newSubjectRow(subjectData) {
   newCell = document.createElement('td');
   newCell.appendChild(newForm);
   newRow.appendChild(newCell);
+
+  // add the new row to the page and activate the event listener for the submit
   insertLocation = document.getElementById('currentSubjects');
   insertLocation.appendChild(newRow);
   document.getElementById(`deleteSubjectRow_${subjectData['subject_catalog_id']}`).getElementsByTagName('input')[2].addEventListener('click', removeSubject);
 }
 
+// link a clicked subject to the current title
 function linkSubject(event) {
   event.preventDefault();
   console.log(this.form.elements)
@@ -79,6 +89,7 @@ function linkSubject(event) {
     'request_type': 'linkSubject'
   };
   console.log(payload)
+  // send a POST request for the new Title_Subjects entry
   var req = new XMLHttpRequest();
   req.open('post', this.form.action, true);
   req.setRequestHeader('Content-Type', 'application/json');
@@ -97,11 +108,15 @@ function linkSubject(event) {
   req.send(JSON.stringify(payload));
 }
 
+// Build a new row to display a linked creator based on some data
 function newCreatorRow(creatorData) {
+  //create a new row for out new instance
   newRow = document.createElement('tr');
   newRow.setAttribute(
     'id',`deleteCreatorRow_${creatorData['creator_catalog_id']}`
   );
+
+  // populate data cells
   newCell = document.createElement('td');
   newCell.textContent = creatorData['first_name'];
   newRow.appendChild(newCell);
@@ -110,6 +125,7 @@ function newCreatorRow(creatorData) {
   newCell.textContent = creatorData['last_name'];
   newRow.appendChild(newCell);
 
+  //create a form for deleting the new instance
   newForm = document.createElement('form');
   newForm.setAttribute('action', creatorData['action']);
   newForm.setAttribute('method','post');
@@ -136,11 +152,14 @@ function newCreatorRow(creatorData) {
   newCell = document.createElement('td');
   newCell.appendChild(newForm);
   newRow.appendChild(newCell);
+
+  //add the new row to the page and activate the delete event listener
   insertLocation = document.getElementById('currentCreators');
   insertLocation.appendChild(newRow);
   document.getElementById(`deleteCreatorRow_${creatorData['creator_catalog_id']}`).getElementsByTagName('input')[2].addEventListener('click', removeCreator);
 }
 
+//link a clicked Creator to the current title
 function linkCreator(event) {
   event.preventDefault();
   console.log(this.form.elements)
@@ -149,6 +168,8 @@ function linkCreator(event) {
     'title_id': this.form.elements['title_id'].value,
     'request_type': 'linkCreator'
   };
+
+  // send a POST for the nee Title_Creators entry to INSERT
   console.log(payload)
   var req = new XMLHttpRequest();
   req.open('post', this.form.action, true);
@@ -168,6 +189,9 @@ function linkCreator(event) {
   req.send(JSON.stringify(payload));
 }
 
+//event listener for the delete button on a subject_heading.
+//unlinks the selected subject from the current title
+//(DELETE from composite entity)
 function removeSubject(event) {
   event.preventDefault();
   payload = {
@@ -175,6 +199,7 @@ function removeSubject(event) {
     'request_type': 'removeSubject'
   };
   var req = new XMLHttpRequest();
+  //sen DELETE request
   req.open('delete', this.form.action, true);
   req.setRequestHeader('Content-Type', 'application/json');
   req.addEventListener('load',function(event){
@@ -182,6 +207,7 @@ function removeSubject(event) {
       // refresh the display
       newData = JSON.parse(req.responseText);
       alert('Success!');
+      //erase the deleted row from the page
       changeId = `deleteSubjectRow_${newData['subject_catalog_id']}`;
       deletedRow = document.getElementById(changeId);
       deletedRow.remove();
@@ -195,6 +221,9 @@ function removeSubject(event) {
   req.send(JSON.stringify(payload));
 }
 
+//event listener for the delete button on a creator.
+//unlinks the selected creator from the current title
+//(DELETE from composite entity)
 function removeCreator(event) {
   event.preventDefault();
   payload = {
@@ -202,6 +231,7 @@ function removeCreator(event) {
     'request_type': 'removeCreator'
   };
   var req = new XMLHttpRequest();
+  //send a DELETE request
   req.open('delete', this.form.action, true);
   req.setRequestHeader('Content-Type', 'application/json');
   req.addEventListener('load',function(event){
@@ -209,6 +239,7 @@ function removeCreator(event) {
       // refresh the display
       newData = JSON.parse(req.responseText);
       alert('Success!');
+      //erase the now-invalid row
       changeId = `deleteCreatorRow_${newData['creator_catalog_id']}`;
       deletedRow = document.getElementById(changeId);
       deletedRow.remove();
@@ -222,6 +253,7 @@ function removeCreator(event) {
   req.send(JSON.stringify(payload));
 }
 
+// Update the information in the Titles table
 function sendUpdate(event) {
   event.preventDefault();
   // get the data from the form
@@ -237,7 +269,8 @@ function sendUpdate(event) {
   for(var f of formFields) {
     payload[f] = this.form.elements[f].value;
   }
-  // open a http request and send the data
+  // open a http request and send the data.
+  // use PUT since this is an update
   var req = new XMLHttpRequest();
   req.open('put', this.form.action, true);
   req.setRequestHeader('Content-Type', 'application/json');
@@ -246,6 +279,7 @@ function sendUpdate(event) {
       // refresh the display
       newData = JSON.parse(req.responseText);
       alert('Success!');
+      //refresh page display to reflect changes
       changeId = `optionTitle${newData['title_id']}`;
       newTitle = `${newData['title_text']}`;
       document.getElementById(changeId).textContent = newTitle;
@@ -262,6 +296,7 @@ function sendUpdate(event) {
       for(var f of fields) {
         updateButton.form.elements[f].value = newData[f];
       }
+      //update the selectmenu control
       $("#select_title_id").selectmenu("refresh", true);
     } else {
       console.log('Error in network request: ' + req.statusText);
