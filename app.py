@@ -522,7 +522,54 @@ def update_title():
     elif request.method =='DELETE':
         #step 6 - Delete, probably should be js-based like add_titles
         # use this for removing items from title_subjects/title_creators
-        return render_template("titles/update_title.html")
+        #return render_template("titles/update_title.html")
+        request_data = request.json
+        # process disassociating a creator from a title
+        if request_data['request_type'] == 'removeCreator':
+            query = "DELETE FROM Title_Creators WHERE creator_catalog_id = %(creator_catalog_id)s"
+            query_params = {
+                'creator_catalog_id': request_data['creator_catalog_id']
+            }
+            try:
+                # run the update
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        # process disassociating a subject from a title
+        elif request_data['request_type'] == 'removeSubject':
+            query = "DELETE FROM Title_Subjects WHERE subject_catalog_id = %(subject_catalog_id)s"
+            query_params = {
+                'subject_catalog_id': request_data['subject_catalog_id']
+            }
+            try:
+                # run the update
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        else:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
     elif request.method == 'POST':
         # step 5 - insert, probably should be js-based like add_titles
         # use this for adding to title_subjects/title_creators

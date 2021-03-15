@@ -69,14 +69,14 @@
       </thead>
       <tbody>
         {% for creator in title_creators %}
-        <tr>
+        <tr id="deleteCreatorRow_{{creator['creator_catalog_id']}}">
           <td>{{creator['first_name']}}</td>
           <td>{{creator['last_name']}}</td>
           <td>
             <form method="delete" action="{{url_for('update_title')}}">
               <input type="hidden" name="creator_catalog_id" value="{{creator['creator_catalog_id']}}">
               <input type="hidden" name="title_id" value="{{creator['title_id']}}">
-              <input type="submit" name="delete_creator" value="Remove Creator">
+              <input type="submit" name="delete_creator" value="Remove Creator" class="removeCreatorButton">
             </form>
           </td>
         </tr>
@@ -93,13 +93,13 @@
       <tbody>
         {% if subject is not none %}
         {% for subject in title_subjects %}
-        <tr>
+        <tr id="deleteSubjectRow_{{subject['subject_catalog_id']}}">
           <td>{{subject['subject_heading']}}</td>
           <td>
             <form method="delete" action="{{url_for('update_title')}}">
               <input type="hidden" name="subject_catalog_id" value="{{subject['subject_catalog_id']}}">
               <input type="hidden" name="title_id" value="{{subject['title_id']}}">
-              <input type="submit" name="delete_creator" value="Remove Subject">
+              <input type="submit" name="delete_subject" value="Remove Subject" class="removeSubjectButton">
             </form>
           </td>
         </tr>
