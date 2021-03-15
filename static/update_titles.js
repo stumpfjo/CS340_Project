@@ -5,14 +5,95 @@ document.addEventListener('DOMContentLoaded', function(event) {
     updateButton.addEventListener('click', sendUpdate);
   }
   deleteCreatorButtons = document.getElementsByClassName('removeCreatorButton');
-  for (var i = 0; i<deleteCreatorButtons.length;i++) {
-    deleteCreatorButtons[i].addEventListener('click', removeCreator);
+  if (deleteCreatorButtons.length>0) {
+    for (var i = 0; i<deleteCreatorButtons.length;i++) {
+      deleteCreatorButtons[i].addEventListener('click', removeCreator);
+    }
   }
   deleteSubjectButtons = document.getElementsByClassName('removeSubjectButton');
-  for (var i = 0; i<deleteCreatorButtons.length;i++) {
-    deleteSubjectButtons[i].addEventListener('click', removeSubject);
+  if (deleteSubjectButtons.length>0) {
+    for (var i = 0; i<deleteSubjectButtons.length;i++) {
+      deleteSubjectButtons[i].addEventListener('click', removeSubject);
+    }
+  }
+  addCreatorButtons = document.getElementsByClassName('addCreatorButton');
+  if (addCreatorButtons.length>0) {
+    for (var i = 0; i<addCreatorButtons.length;i++) {
+      addCreatorButtons[i].addEventListener('click', linkCreator);
+    }
   }
 });
+
+function newCreatorRow(creatorData) {
+  newRow = document.createElement('tr');
+  newRow.setAttribute(
+    'id',`deleteCreatorRow_${creatorData['creator_catalog_id']}`
+  );
+  newCell = document.createElement('td');
+  newCell.textContent = creatorData['first_name'];
+  newRow.appendChild(newCell);
+
+  newCell = document.createElement('td');
+  newCell.textContent = creatorData['last_name'];
+  newRow.appendChild(newCell);
+
+  newForm = document.createElement('form');
+  newForm.setAttribute('action', creatorData['action']);
+  newForm.setAttribute('method','post');
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','hidden');
+  newInput.setAttribute('name','creator_catalog_id');
+  newInput.setAttribute('value',creatorData['creator_catalog_id']);
+  newForm.appendChild(newInput);
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','hidden');
+  newInput.setAttribute('name','title_id');
+  newInput.setAttribute('value',creatorData['title_id']);
+  newForm.appendChild(newInput);
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','submit');
+  newInput.setAttribute('name','delete_creator');
+  newInput.setAttribute('value', 'Remove Creator');
+  newInput.setAttribute('class', 'removeCreatorButton');
+  newForm.appendChild(newInput);
+
+  newCell = document.createElement('td');
+  newCell.appendChild(newForm);
+  newRow.appendChild(newCell);
+  insertLocation = document.getElementById('currentCreators');
+  insertLocation.appendChild(newRow);
+  document.getElementById(`deleteCreatorRow_${creatorData['creator_catalog_id']}`).getElementsByTagName('input')[2].addEventListener('click', removeCreator);
+}
+
+function linkCreator(event) {
+  event.preventDefault();
+  console.log(this.form.elements)
+  payload = {
+    'creator_id': this.form.elements['creator_id'].value,
+    'title_id': this.form.elements['title_id'].value,
+    'request_type': 'linkCreator'
+  };
+  console.log(payload)
+  var req = new XMLHttpRequest();
+  req.open('post', this.form.action, true);
+  req.setRequestHeader('Content-Type', 'application/json');
+  req.addEventListener('load',function(event){
+    if(req.status >= 200 && req.status < 400){
+      // refresh the display
+      newData = JSON.parse(req.responseText);
+      newCreatorRow(newData);
+    } else {
+      console.log('Error in network request: ' + req.statusText);
+      alert('Error Processing Update');
+    }
+  });
+
+  // send the reuest to the server
+  req.send(JSON.stringify(payload));
+}
 
 function removeSubject(event) {
   event.preventDefault();

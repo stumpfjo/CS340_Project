@@ -531,7 +531,7 @@ def update_title():
                 'creator_catalog_id': request_data['creator_catalog_id']
             }
             try:
-                # run the update
+                # run the delete
                 cursor = db.execute_query(
                     db_connection=db_connection,
                     query=query, query_params=query_params)
@@ -541,6 +541,7 @@ def update_title():
                 response = make_response('Bad Request', 400)
                 response.mimetype = "text/plain"
                 return response
+            #return the row that got deleted so the interface can update
             response = make_response(jsonify(query_params), 200)
             response.mimetype = "application/json"
             return response
@@ -551,7 +552,7 @@ def update_title():
                 'subject_catalog_id': request_data['subject_catalog_id']
             }
             try:
-                # run the update
+                # run the delete
                 cursor = db.execute_query(
                     db_connection=db_connection,
                     query=query, query_params=query_params)
@@ -561,6 +562,7 @@ def update_title():
                 response = make_response('Bad Request', 400)
                 response.mimetype = "text/plain"
                 return response
+            # return the deleted row so the interface can refresh
             response = make_response(jsonify(query_params), 200)
             response.mimetype = "application/json"
             return response
@@ -574,7 +576,48 @@ def update_title():
         # step 5 - insert, probably should be js-based like add_titles
         # use this for adding to title_subjects/title_creators
         # TO-DO for STEP 5
-        return render_template("titles/update_title.html")
+        #return render_template("titles/update_title.html")
+        request_data = request.json
+        # determine which entity we are working with and proceed accordingly
+        if request_data['request_type'] == 'linkCreator':
+            query = "INSERT INTO Title_Creators (title_id, creator_id) VALUES (%(title_id)s, %(creator_id)s)"
+            query_params = {
+                'title_id': request_data['title_id'],
+                'creator_id': request_data['creator_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            # return the new row so the interface can refresh
+            query_params['creator_catalog_id'] = cursor.lastrowid
+            query = "SELECT * FROM Creators WHERE creator_id = %(creator_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            results = cursor.fetchone()
+            query_params['last_name'] = results['last_name']
+            query_params['first_name'] = results['first_name']
+            query_params['action'] = '/titles/update_title'
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        elif request_data['request_type'] == 'linkSubject':
+            return
+        else:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
