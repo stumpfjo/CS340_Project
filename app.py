@@ -28,10 +28,12 @@ def get_db():
 
 # Routes
 
+# Displays an index page with links to all other pages in the site
 @app.route('/')
 def index():
     return render_template("main.html")
 
+# Page to CREATE new Borrowers
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
     db_connection = get_db()
@@ -93,6 +95,7 @@ def add_borrowers():
         states=states
     ), status
 
+# Page to UPDATE Borrowers (READs from Borrowers to populate form controls)
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
     # PUT request means we have been sent new data for a borrower
@@ -139,6 +142,7 @@ def update_borrowers():
     borrowers = get_all_borrowers(db_connection)
     return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
+# Page to READ from Borrowers. Supports text-based search by user entry.
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
     db_connection = get_db()
@@ -176,6 +180,9 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
+# Page to READ and UPDATE from Items table.
+# Supports NULLing the relationship between Items and Borrowers
+# Secondarily READs from Borrowers.
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
@@ -638,7 +645,7 @@ def update_title():
             results = cursor.fetchone()
             query_params['subject_heading'] = results['subject_heading']
             query_params['action'] = '/titles/update_title'
-            
+
             response = make_response(jsonify(query_params), 200)
             response.mimetype = "application/json"
             return response
