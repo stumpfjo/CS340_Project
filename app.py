@@ -580,6 +580,7 @@ def update_title():
         request_data = request.json
         # determine which entity we are working with and proceed accordingly
         if request_data['request_type'] == 'linkCreator':
+            # need to link a new creator to the title
             query = "INSERT INTO Title_Creators (title_id, creator_id) VALUES (%(title_id)s, %(creator_id)s)"
             query_params = {
                 'title_id': request_data['title_id'],
@@ -610,7 +611,35 @@ def update_title():
             response.mimetype = "application/json"
             return response
         elif request_data['request_type'] == 'linkSubject':
-            return
+            #need to link a new subject to the title
+            query = "INSERT INTO Title_Subjects (title_id, subject_id) VALUES (%(title_id)s, %(subject_id)s)"
+            query_params = {
+                'title_id': request_data['title_id'],
+                'subject_id': request_data['subject_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            # return the new row so the interface can refresh
+            query_params['subject_catalog_id'] = cursor.lastrowid
+            query = "SELECT * FROM Subjects WHERE subject_id = %(subject_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            results = cursor.fetchone()
+            query_params['subject_heading'] = results['subject_heading']
+            query_params['action'] = '/titles/update_title'
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
         else:
             # Should not get here
             print('query fail')

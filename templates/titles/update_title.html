@@ -153,9 +153,9 @@
             <td>{{subject['subject_heading']}}</td>
             <td>
               <form method="post" action="{{url_for('update_title')}}">
-                <input type="hidden" name="subject_id" value="{{subject_id}}">
+                <input type="hidden" name="subject_id" value="{{subject['subject_id']}}">
                 <input type="hidden" name="title_id" value="{{title_info['title_id']}}">
-                <input type="submit" name="add_subject" value="Add Subject">
+                <input type="submit" name="add_subject" value="Add Subject" class="addSubjectButton">
               </form>
           </tr>
           {% endfor %}

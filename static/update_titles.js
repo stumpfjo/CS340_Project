@@ -22,7 +22,80 @@ document.addEventListener('DOMContentLoaded', function(event) {
       addCreatorButtons[i].addEventListener('click', linkCreator);
     }
   }
+  addSubjectButtons = document.getElementsByClassName('addSubjectButton');
+  if (addSubjectButtons.length>0) {
+    for (var i = 0; i<addSubjectButtons.length;i++) {
+      addSubjectButtons[i].addEventListener('click', linkSubject);
+    }
+  }
 });
+
+function newSubjectRow(subjectData) {
+  newRow = document.createElement('tr');
+  newRow.setAttribute(
+    'id',`deleteSubjectRow_${subjectData['subject_catalog_id']}`
+  );
+  newCell = document.createElement('td');
+  newCell.textContent = subjectData['subject_heading'];
+  newRow.appendChild(newCell);
+
+  newForm = document.createElement('form');
+  newForm.setAttribute('action', subjectData['action']);
+  newForm.setAttribute('method','post');
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','hidden');
+  newInput.setAttribute('name','subject_catalog_id');
+  newInput.setAttribute('value', subjectData['subject_catalog_id']);
+  newForm.appendChild(newInput);
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','hidden');
+  newInput.setAttribute('name','title_id');
+  newInput.setAttribute('value', subjectData['title_id']);
+  newForm.appendChild(newInput);
+
+  newInput = document.createElement('input');
+  newInput.setAttribute('type','submit');
+  newInput.setAttribute('name','delete_subject');
+  newInput.setAttribute('value', 'Remove Subject');
+  newInput.setAttribute('class', 'removeSubjectButton');
+  newForm.appendChild(newInput);
+
+  newCell = document.createElement('td');
+  newCell.appendChild(newForm);
+  newRow.appendChild(newCell);
+  insertLocation = document.getElementById('currentSubjects');
+  insertLocation.appendChild(newRow);
+  document.getElementById(`deleteSubjectRow_${subjectData['subject_catalog_id']}`).getElementsByTagName('input')[2].addEventListener('click', removeSubject);
+}
+
+function linkSubject(event) {
+  event.preventDefault();
+  console.log(this.form.elements)
+  payload = {
+    'subject_id': this.form.elements['subject_id'].value,
+    'title_id': this.form.elements['title_id'].value,
+    'request_type': 'linkSubject'
+  };
+  console.log(payload)
+  var req = new XMLHttpRequest();
+  req.open('post', this.form.action, true);
+  req.setRequestHeader('Content-Type', 'application/json');
+  req.addEventListener('load',function(event){
+    if(req.status >= 200 && req.status < 400){
+      // refresh the display
+      newData = JSON.parse(req.responseText);
+      newSubjectRow(newData);
+    } else {
+      console.log('Error in network request: ' + req.statusText);
+      alert('Error Processing Update');
+    }
+  });
+
+  // send the reuest to the server
+  req.send(JSON.stringify(payload));
+}
 
 function newCreatorRow(creatorData) {
   newRow = document.createElement('tr');
