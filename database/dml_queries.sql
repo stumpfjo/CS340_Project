@@ -119,6 +119,12 @@ SELECT DISTINCT
 -- Add a new subject_heading
 INSERT INTO Subjects (subject_heading) VALUES (%(subject)s);
 
+--Queries to implement view_subjects interface
+--populate the filter dropdown
+SELECT * FROM Subjects;
+--select matching titles to the filter
+SELECT * FROM Titles JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id WHERE subject_id = %(s_id)s;
+
 -- Add a new Title to the systems
 INSERT INTO Titles (
     title_text,
@@ -331,6 +337,18 @@ SELECT * FROM Creators;
 SELECT * FROM Subjects;
 --populate a dropdown list so we can switch which title we are working with
 SELECT title_text, title_id FROM Titles ORDER BY title_text;
+--Delete from the m:m relationship Title_Creators
+DELETE FROM Title_Creators WHERE creator_catalog_id = %(creator_catalog_id)s;
+--Delete from the m:m relationship Title_Subjects
+DELETE FROM Title_Subjects WHERE subject_catalog_id = %(subject_catalog_id)s;
+--Create to the m:m relationship Title_Creators
+INSERT INTO Title_Creators (title_id, creator_id) VALUES (%(title_id)s, %(creator_id)s);
+--Get into about an added Title-Creator link
+SELECT * FROM Creators WHERE creator_id = %(creator_id)s;
+--Create to the m:m relationship Title_Subjects
+INSERT INTO Title_Subjects (title_id, subject_id) VALUES (%(title_id)s, %(subject_id)s);
+--Get into about an added Title-Subject link
+SELECT * FROM Subjects WHERE subject_id = %(subject_id)s;
 
 -- Queries to support adding additional copies (Items) linke to a Title
 -- add an Item

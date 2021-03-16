@@ -28,10 +28,12 @@ def get_db():
 
 # Routes
 
+# Displays an index page with links to all other pages in the site
 @app.route('/')
 def index():
     return render_template("main.html")
 
+# Page to CREATE new Borrowers
 @app.route('/borrowers/add_borrowers', methods=['GET', 'POST'])
 def add_borrowers():
     db_connection = get_db()
@@ -93,6 +95,7 @@ def add_borrowers():
         states=states
     ), status
 
+# Page to UPDATE Borrowers (READs from Borrowers to populate form controls)
 @app.route('/borrowers/update_borrowers', methods=['GET','PUT'])
 def update_borrowers():
     # PUT request means we have been sent new data for a borrower
@@ -139,6 +142,7 @@ def update_borrowers():
     borrowers = get_all_borrowers(db_connection)
     return render_template("borrowers/update_borrowers.html", states=states, current=current, borrowers=borrowers)
 
+# Page to READ from Borrowers. Supports text-based search by user entry.
 @app.route('/borrowers/view_borrowers', methods=['GET'])
 def view_borrowers():
     db_connection = get_db()
@@ -176,6 +180,9 @@ def view_borrowers():
 
     return render_template("borrowers/view_borrowers.html", borrowers=results)
 
+# Page to READ and UPDATE from Items table.
+# Supports NULLing the relationship between Items and Borrowers
+# Secondarily READs from Borrowers.
 @app.route('/items/view_checkouts', methods=['GET','PUT'])
 def view_checkouts():
     db_connection = get_db()
@@ -226,6 +233,9 @@ def view_checkouts():
 
     return render_template("items/view_checkouts.html", results=results, current=current, borrowers=borrowers), status
 
+# Page to READ and UPDATE from Items table.
+# Supports creating the 1:m relation between Items/Borrowers.
+# Secondarily READs from Borrowers.
 @app.route('/items/add_checkouts', methods=['GET','PUT'])
 def add_checkouts():
     #step 6 - Update
@@ -276,6 +286,7 @@ def add_checkouts():
 
     return render_template("items/add_checkouts.html", current=current, borrowers=borrowers, available_items=available_items)
 
+# Page to READ and DELETE from the Items table.
 @app.route('/items/weed_items', methods=['GET','DELETE'])
 def weed_items():
     # step 6 - Delete
@@ -307,6 +318,7 @@ def weed_items():
         'last_name': '',
         'subject_heading': ''
     };
+    # set up the correct search query
     if request.args.get('search'):
         if request.args.get('searchBy') == 'title':
             # LIKE match on title_text
@@ -339,6 +351,7 @@ def weed_items():
 
     return render_template("items/weed_items.html", results=results, search=search)
 
+# Page to support CREATE for Subjects table
 @app.route('/subjects/add_subjects.html', methods=['GET', 'POST'])
 def add_subjects():
     db_connection = get_db()
@@ -350,6 +363,7 @@ def add_subjects():
     message_params = None
     status = 200
 
+    # INSERT the supplied data
     if request.method == 'POST':
         query = "INSERT INTO Subjects (subject_heading) VALUES (%(subject)s)"
         query_params = {
@@ -371,7 +385,7 @@ def add_subjects():
             status = 400
             add_success = "error"
             fill_params = query_params
-
+    # GET routing will fall through to here
     return render_template(
         "subjects/add_subjects.html",
         success=add_success,
@@ -379,7 +393,8 @@ def add_subjects():
         message=message_params
     ), status
 
-
+# Page to READ from Subjects table (linked to Titles table)
+# uses populated dropdown to filter Titles
 @app.route('/subjects/view_subjects', methods=["GET"])
 def view_subjects():
     subjectId = request.args.get('subjectId', default=-1, type=int)
@@ -396,6 +411,7 @@ def view_subjects():
 
     selected = subjectResults[0]['subject_id']
 
+    # get the Titles associated with the selected subject_heading
     if subjectId > 0:
         query = "SELECT * FROM Titles JOIN Title_Subjects ON Titles.title_id = Title_Subjects.title_id WHERE subject_id = %(s_id)s"
         query_params = {
@@ -412,6 +428,7 @@ def view_subjects():
 
     return render_template("/subjects/view_subjects.html", subjects=subjectResults, titles=subjectTitlesResults, selected=selected)
 
+# Page to CREATE new Titles
 @app.route('/titles/add_titles', methods=['GET', 'POST'])
 def add_titles():
     # step 5
@@ -448,6 +465,7 @@ def add_titles():
         # When we reach this page via get, send the form
         return render_template("titles/add_titles.html"), 200
 
+# Page to READ from Titles table
 @app.route('/titles/search_titles', methods=['GET'])
 def search_titles():
     # step 5
@@ -455,7 +473,8 @@ def search_titles():
     if request.args.get('search') != 'Search':
         return render_template("titles/search_titles.html", titles=None, search_string='')
     else:
-        query = "SELECT t.title_id, t.title_text, t.language, t.publication_year, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf FROM Titles AS t LEFT OUTER JOIN (SELECT title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (SELECT title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id"
+        # query to generate desired results and calculate in collection/on-shelf
+        query = "SELECT t.title_id, t.title_text, t.language, t.publication_year, t.edition, IFNULL(co.checked_out,0) AS num_checked_out, IFNULL(os.on_shelf,0) AS num_on_shelf FROM Titles AS t LEFT OUTER JOIN (SELECT title_id, COUNT(*) AS checked_out FROM Items WHERE borrower_id IS NOT NULL GROUP BY title_id) AS co ON t.title_id = co.title_id LEFT OUTER JOIN (SELECT title_id, COUNT(*) AS on_shelf FROM Items WHERE borrower_id IS NULL GROUP BY title_id) AS os ON t.title_id = os.title_id"
 
         # Select the correct search type for WHERE clause
         search_string = request.args.get('title_text')
@@ -482,6 +501,12 @@ def search_titles():
             abort(400)
         return render_template("titles/search_titles.html", titles=results, search_string=request.args.get('title_text'))
 
+# Page to support UPDATE for Titles table (READs from Titles table to populate)
+# Also supports READ from Title_Creators and from Title_Subjects as well as
+# READ from Subjects and Creators.
+# Supports DELETE and CREATE for Title_Creators and Title_Subjects
+# (controls m:m relationships between Titles and Creators and
+# between Titles and Subjects)
 @app.route('/titles/update_title', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def update_title():
     db_connection = get_db()
@@ -520,17 +545,134 @@ def update_title():
         return response
 
     elif request.method =='DELETE':
-        #step 6 - Delete, probably should be js-based like add_titles
-        # use this for removing items from title_subjects/title_creators
-        return render_template("titles/update_title.html")
+        # DELETE request manipulates Title_Creators or Title_Subjects
+        request_data = request.json
+        # process disassociating a creator from a title
+        if request_data['request_type'] == 'removeCreator':
+            query = "DELETE FROM Title_Creators WHERE creator_catalog_id = %(creator_catalog_id)s"
+            query_params = {
+                'creator_catalog_id': request_data['creator_catalog_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            #return the row that got deleted so the interface can update
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        # process disassociating a subject from a title
+        elif request_data['request_type'] == 'removeSubject':
+            query = "DELETE FROM Title_Subjects WHERE subject_catalog_id = %(subject_catalog_id)s"
+            query_params = {
+                'subject_catalog_id': request_data['subject_catalog_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            # return the deleted row so the interface can refresh
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        else:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
     elif request.method == 'POST':
-        # step 5 - insert, probably should be js-based like add_titles
-        # use this for adding to title_subjects/title_creators
-        # TO-DO for STEP 5
-        return render_template("titles/update_title.html")
+        # POST request manipulates Title_Creators or Title_Subjects
+        request_data = request.json
+        # determine which entity we are working with and proceed accordingly
+        if request_data['request_type'] == 'linkCreator':
+            # need to link a new creator to the title
+            query = "INSERT INTO Title_Creators (title_id, creator_id) VALUES (%(title_id)s, %(creator_id)s)"
+            query_params = {
+                'title_id': request_data['title_id'],
+                'creator_id': request_data['creator_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            # return the new row so the interface can refresh
+            query_params['creator_catalog_id'] = cursor.lastrowid
+            query = "SELECT * FROM Creators WHERE creator_id = %(creator_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            results = cursor.fetchone()
+            query_params['last_name'] = results['last_name']
+            query_params['first_name'] = results['first_name']
+            query_params['action'] = '/titles/update_title'
+
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        elif request_data['request_type'] == 'linkSubject':
+            #need to link a new subject to the title
+            query = "INSERT INTO Title_Subjects (title_id, subject_id) VALUES (%(title_id)s, %(subject_id)s)"
+            query_params = {
+                'title_id': request_data['title_id'],
+                'subject_id': request_data['subject_id']
+            }
+            try:
+                # run the delete
+                cursor = db.execute_query(
+                    db_connection=db_connection,
+                    query=query, query_params=query_params)
+            except:
+                # Should not get here
+                print('query fail')
+                response = make_response('Bad Request', 400)
+                response.mimetype = "text/plain"
+                return response
+            # return the new row so the interface can refresh
+            query_params['subject_catalog_id'] = cursor.lastrowid
+            query = "SELECT * FROM Subjects WHERE subject_id = %(subject_id)s"
+            cursor = db.execute_query(
+                db_connection=db_connection,
+                query=query, query_params=query_params)
+            results = cursor.fetchone()
+            query_params['subject_heading'] = results['subject_heading']
+            query_params['action'] = '/titles/update_title'
+
+            response = make_response(jsonify(query_params), 200)
+            response.mimetype = "application/json"
+            return response
+        else:
+            # Should not get here
+            print('query fail')
+            response = make_response('Bad Request', 400)
+            response.mimetype = "text/plain"
+            return response
+
     else:
         # process the GET request
         # Extract the info for a given title_id to autopopulate the form
+        # GET used to switch title or for initial page load
         query = 'SELECT * FROM Titles WHERE title_id = %(t_id)s'
         query_params = {'t_id': request.args.get('title_id')}
         try:
@@ -589,6 +731,7 @@ def update_title():
             creators=creator_results,
             subjects=subject_results, titles=titles)
 
+# Page to CREATE new Items (and link them in the 1:m relationship to Titles)
 @app.route('/items/add_item', methods=['GET', 'POST'])
 def add_item():
     db_connection = get_db()
@@ -650,6 +793,7 @@ def add_item():
 
         return render_template("/items/add_item.html", current=current, titles=titles, items=items), 200
 
+# Page to CREATE new Creators
 @app.route('/creators/add_creators', methods=['GET', 'POST'])
 def add_creators():
     db_connection = get_db()
@@ -663,6 +807,7 @@ def add_creators():
     message_params = None
     status = 200
 
+    # POST used to supply new data
     if request.method == 'POST':
         query = "INSERT INTO Creators (first_name, last_name) VALUES (%(fname)s, %(lname)s)"
         request_data = request.json
@@ -690,6 +835,7 @@ def add_creators():
         #     add_sucess = "error"
         #     fill_params = query_params
 
+    # GET falls through to here; used for initial page load
     return render_template(
         "creators/add_creators.html",
         success=add_success,
@@ -697,6 +843,7 @@ def add_creators():
         message = message_params
     ), status
 
+# Page to READ from Creators table
 @app.route('/creators/view_creators')
 def view_creators():
     db_connection = get_db()
